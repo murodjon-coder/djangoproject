@@ -156,3 +156,58 @@ class Photo(models.Model):
 
     def get_absolute_url(self):
         return reverse('photostudio:photo_detail', args=[self.pk])
+
+
+class BookingRequest(models.Model):
+    """Onlayn bron so'rovi: mehmon yoki mijoz saytdan fotosessiyaga yoziladi, xodim tasdiqlaydi."""
+
+    class Status(models.TextChoices):
+        NEW = 'new', "Yangi"
+        APPROVED = 'approved', "Tasdiqlangan"
+        REJECTED = 'rejected', "Rad etilgan"
+
+    full_name = models.CharField("Ismingiz", max_length=150)
+    phone = models.CharField("Telefon", max_length=20, validators=[Client.phone_validator])
+    email = models.EmailField("Email", blank=True)
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='booking_requests',
+        verbose_name="Fotosessiya turi",
+    )
+    preferred_at = models.DateTimeField("Qulay sana va vaqt")
+    message = models.TextField("Qo'shimcha izoh", blank=True)
+    # Agar so'rovni tizimga kirgan foydalanuvchi yuborgan bo'lsa
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='booking_requests',
+        verbose_name="Yuborgan akkaunt",
+    )
+    status = models.CharField("Holati", max_length=10, choices=Status.choices, default=Status.NEW)
+    answer = models.TextField("Studiya javobi", blank=True)
+    # Tasdiqlanganda yaratilgan fotosessiya (One-to-One: bitta so'rov — bitta sessiya)
+    session = models.OneToOneField(
+        Session,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='booking_request',
+        verbose_name="Fotosessiya",
+    )
+    created_at = models.DateTimeField("Yuborilgan vaqt", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Bron so'rovi"
+        verbose_name_plural = "Bron so'rovlari"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.full_name} — {timezone.localtime(self.preferred_at):%d.%m.%Y %H:%M}"
+
+    def get_absolute_url(self):
+        return reverse('photostudio:booking_detail', args=[self.pk])

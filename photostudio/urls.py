@@ -34,6 +34,11 @@ urlpatterns = [
     path('sessions/<int:pk>/edit/', views.SessionUpdateView.as_view(), name='session_update'),
     path('sessions/<int:pk>/delete/', views.SessionDeleteView.as_view(), name='session_delete'),
 
+    # Onlayn bron
+    path('book/', views.booking_create, name='booking_create'),
+    path('bookings/', views.BookingListView.as_view(), name='booking_list'),
+    path('bookings/<int:pk>/', views.booking_detail, name='booking_detail'),
+
     # 8-hafta: ro'yxatdan o'tish
     path('accounts/register/', views.register, name='register'),
 ]

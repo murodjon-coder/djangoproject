@@ -48,6 +48,8 @@
 </section>
 {% endif %}
 
+{% include '_my_bookings.html' %}
+
 <section class="section">
     <div class="section-head"><h2>Mening suratlarim</h2></div>
     {% for s in sessions %}
@@ -97,10 +99,14 @@
     <h1>Kabinet hali bog'lanmagan</h1>
     <p>
         Siz <strong>{{ user.username }}</strong> sifatida kirdingiz, lekin akkauntingiz hali fotostudiya mijoziga bog'lanmagan.
-        Fotostudiyaga murojaat qiling — administrator akkauntingizni mijoz profilingizga bog'laydi
+        Fotosessiyaga yoziling — so'rovingiz tasdiqlanganda kabinetingiz avtomatik ochiladi
         va bu yerda o'z fotosessiyalaringiz hamda suratlaringizni ko'rasiz.
     </p>
-    <a class="btn btn-ghost" href="{% url 'photostudio:home' %}">Bosh sahifa</a>
+    <div class="actions" style="justify-content: center;">
+        <a class="btn" href="{% url 'photostudio:booking_create' %}">Fotosessiyaga yozilish</a>
+        <a class="btn btn-ghost" href="{% url 'photostudio:home' %}">Bosh sahifa</a>
+    </div>
 </div>
+{% include '_my_bookings.html' %}
 {% endif %}
 {% endblock %}

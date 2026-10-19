@@ -6,6 +6,7 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db import transaction
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.models import Avg, Count, DecimalField, Prefetch, Q, Sum, Value
@@ -15,8 +16,15 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
-from .forms import ClientForm, PhotoForm, SessionForm
-from .models import Category, Client, Photo, Session, Tag
+from .forms import (
+    BookingApproveForm,
+    BookingRejectForm,
+    BookingRequestForm,
+    ClientForm,
+    PhotoForm,
+    SessionForm,
+)
+from .models import BookingRequest, Category, Client, Photo, Session, Tag
 from .roles import (
     EmployeeRequiredMixin,
     StaffRequiredMixin,
@@ -362,7 +370,10 @@ class SessionDeleteView(StaffRequiredMixin, DeleteView):
 def cabinet(request):
     """Mijozning shaxsiy kabineti: faqat o'z fotosessiyalari va suratlari."""
     client = get_client_profile(request.user)
-    context = {'client': client}
+    context = {
+        'client': client,
+        'bookings': BookingRequest.objects.filter(user=request.user).select_related('category')[:10],
+    }
     if client:
         photos_qs = Photo.objects.select_related('category').prefetch_related('tags')
         sessions = list(
@@ -487,6 +498,122 @@ def dashboard(request):
         'top_clients': top_clients,
         'popular_tags': Tag.objects.annotate(count=Count('photos')).filter(count__gt=0).order_by('-count')[:10],
     })
+
+
+# ---------------------------------------------------------------- Onlayn bron
+
+def phone_digits(phone):
+    return ''.join(ch for ch in phone if ch.isdigit())
+
+
+def find_client_by_phone(phone):
+    """Telefon raqam bo'yicha mavjud mijozni topish (probel va belgilarga qaramay)."""
+    digits = phone_digits(phone)
+    return next((c for c in Client.objects.all() if phone_digits(c.phone) == digits), None)
+
+
+def booking_create(request):
+    """Hamma uchun: fotosessiyaga onlayn yozilish formasi."""
+    profile = get_client_profile(request.user)
+    if request.method == 'POST':
+        form = BookingRequestForm(request.POST)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            if request.user.is_authenticated:
+                booking.user = request.user
+            booking.save()
+            messages.success(
+                request,
+                "So'rovingiz qabul qilindi! Administrator tez orada siz bilan bog'lanadi.",
+            )
+            return redirect('photostudio:cabinet' if request.user.is_authenticated else 'photostudio:home')
+    else:
+        initial = {}
+        if profile:
+            initial = {'full_name': profile.full_name, 'phone': profile.phone, 'email': profile.email}
+        form = BookingRequestForm(initial=initial)
+    return render(request, 'photostudio/booking_form.html', {'form': form})
+
+
+class BookingListView(EmployeeRequiredMixin, ListView):
+    context_object_name = 'bookings'
+    template_name = 'photostudio/booking_list.html'
+
+    def get_queryset(self):
+        queryset = BookingRequest.objects.select_related('category', 'session')
+        status = self.request.GET.get('status', BookingRequest.Status.NEW)
+        if status in BookingRequest.Status.values:
+            queryset = queryset.filter(status=status)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['statuses'] = BookingRequest.Status.choices
+        context['current_status'] = self.request.GET.get('status', BookingRequest.Status.NEW)
+        context['counts'] = dict(
+            BookingRequest.objects.values_list('status').annotate(n=Count('id')).order_by()
+        )
+        return context
+
+
+@login_required
+@employee_required
+def booking_detail(request, pk):
+    booking = get_object_or_404(BookingRequest.objects.select_related('category', 'session', 'user'), pk=pk)
+    approve_form = BookingApproveForm(initial={'scheduled_at': booking.preferred_at})
+    reject_form = BookingRejectForm()
+    if request.method == 'POST' and booking.status == BookingRequest.Status.NEW:
+        if 'approve' in request.POST:
+            approve_form = BookingApproveForm(request.POST)
+            if approve_form.is_valid():
+                session = approve_booking(booking, approve_form.cleaned_data)
+                messages.success(request, f"So'rov tasdiqlandi va fotosessiya yaratildi: {session}.")
+                return redirect(session)
+        elif 'reject' in request.POST:
+            reject_form = BookingRejectForm(request.POST)
+            if reject_form.is_valid():
+                booking.status = BookingRequest.Status.REJECTED
+                booking.answer = reject_form.cleaned_data['answer']
+                booking.save(update_fields=['status', 'answer'])
+                messages.info(request, f"“{booking.full_name}” so'rovi rad etildi.")
+                return redirect('photostudio:booking_list')
+    return render(request, 'photostudio/booking_detail.html', {
+        'booking': booking,
+        'existing_client': find_client_by_phone(booking.phone),
+        'approve_form': approve_form,
+        'reject_form': reject_form,
+    })
+
+
+@transaction.atomic
+def approve_booking(booking, data):
+    """So'rovni tasdiqlash: mijozni topadi yoki yaratadi, kabinetni bog'laydi, fotosessiya yaratadi."""
+    client = find_client_by_phone(booking.phone)
+    if client is None:
+        client = Client.objects.create(full_name=booking.full_name, phone=booking.phone, email=booking.email)
+    # So'rovni mijozning o'zi akkauntidan yuborgan bo'lsa — kabinetini avtomatik bog'laymiz
+    if booking.user and client.user is None and get_client_profile(booking.user) is None:
+        client.user = booking.user
+        client.save(update_fields=['user'])
+    notes = f"Onlayn bron #{booking.pk}."
+    if booking.category:
+        notes += f" Turi: {booking.category.name}."
+    if booking.message:
+        notes += f" Mijoz izohi: {booking.message}"
+    session = Session.objects.create(
+        client=client,
+        photographer=data['photographer'],
+        scheduled_at=data['scheduled_at'],
+        duration_minutes=data['duration_minutes'],
+        location=data['location'],
+        price=data['price'],
+        notes=notes,
+    )
+    booking.status = BookingRequest.Status.APPROVED
+    booking.answer = data['answer']
+    booking.session = session
+    booking.save(update_fields=['status', 'answer', 'session'])
+    return session
 
 
 # ---------------------------------------------------------------- Ro'yxatdan o'tish

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Fotosessiyaga yozilish{% endblock %}
+
+{% block content %}
+<div class="booking">
+    <div class="booking-art">
+        <img src="{% static 'images/studio.jpg' %}" alt="Fotostudiya interyeri">
+        <div class="booking-art-text">
+            <span class="eyebrow">Onlayn bron</span>
+            <h2>Studiya sizni kutmoqda</h2>
+            <ul class="checklist">
+                <li>Professional yorug'lik va fonlar</li>
+                <li>Tayyor suratlar shaxsiy kabinetingizda</li>
+                <li>Administrator 1 ish kuni ichida bog'lanadi</li>
+            </ul>
+        </div>
+    </div>
+
+    <div>
+        <span class="eyebrow">Fotosessiyaga yozilish</span>
+        <h1>Qulay vaqtni tanlang</h1>
+        <p class="muted" style="margin-bottom: 24px;">So'rov yuboring — studiya vaqtni tasdiqlaydi va siz bilan bog'lanadi.</p>
+
+        <form method="post" class="form-card" novalidate>
+            {% csrf_token %}
+            {% include '_form_fields.html' with form=form %}
+            <div class="form-actions">
+                <button type="submit">So'rov yuborish</button>
+                <a class="btn btn-ghost" href="{% url 'photostudio:home' %}">Bekor qilish</a>
+            </div>
+        </form>
+        {% if not user.is_authenticated %}
+        <p class="auth-switch">Akkauntingiz bormi? <a class="link" href="{% url 'login' %}?next={% url 'photostudio:booking_create' %}">Kiring</a> — so'rov holatini kabinetingizda kuzatasiz.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

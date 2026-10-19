@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Ro'yxatdan o'tish{% endblock %}
 
 {% block content %}
 <div class="auth">
-    <div class="auth-art">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.6" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m14.31 8 5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16 3.95 6.06M14.31 16H2.83m13.79-4-5.74 9.94"/></svg>
+    <div class="auth-art has-photo">
+        <img src="{% static 'images/garden.jpg' %}" alt="Bog'dagi to'y fotosessiyasi">
         <blockquote>Galereya, mijozlar va fotosessiyalar — bitta akkaunt bilan.<cite>Ro'yxatdan o'tish bepul</cite></blockquote>
     </div>
 

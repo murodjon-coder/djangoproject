@@ -2,12 +2,17 @@
 
 Buyruqni bir necha marta ishga tushirsa ham, bir xil yozuvlar takrorlanmaydi.
 Demo mijoz kabineti: login "aziza", parol "Mijoz2026" (Aziza Rahimova).
+Suratlar photostudio/demo_photos/ papkasidan olinadi (Higgsfield Soul 2.0 bilan yaratilgan AI fotolar).
+Mavjud suratlarning rasmini yangilash:  python manage.py seed_demo --rasmlarni-yangilash
 """
 import datetime
 import io
 import random
 
+from pathlib import Path
+
 from django.contrib.auth import get_user_model
+from django.core.files import File
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 from django.utils import timezone
@@ -50,14 +55,21 @@ SESSIONS = [
     (3, "Murodjon", -26, 11, 650_000, Session.Status.DONE, "Asosiy studiya"),
 ]
 
-# (nomi, fotograf, kategoriya, sessiya indeksi, teglar)
+DEMO_PHOTOS_DIR = Path(__file__).resolve().parents[2] / 'demo_photos'
+
+# (nomi, fotograf, kategoriya, sessiya indeksi, teglar, demo_photos/ dagi fayl)
 PHOTOS = [
-    ("Kelin-kuyov portreti", "Murodjon", "To'y", 0, ["to'y", "tashqi", "kechqurun"]),
-    ("Bog'dagi to'y lahzasi", "Murodjon", "Tabiat", 0, ["to'y", "tashqi", "tabiiy yorug'lik"]),
-    ("Oilaviy fotosessiya", "Dilnoza Karimova", "Oilaviy", 1, ["oila", "studiya", "iliq ranglar"]),
-    ("Bolalar fotosessiyasi", "Murodjon", "Bolalar", 1, ["bolalar", "oila", "studiya"]),
-    ("Studiyadagi portret", "Murodjon", "Portret", 2, ["portret", "studiya", "past yorug'lik"]),
-    ("Biznes portret", "Murodjon", "Studiya", 2, ["portret", "oq fon", "biznes"]),
+    ("Kelin-kuyov portreti", "Murodjon", "To'y", 0, ["to'y", "tashqi", "kechqurun"], "kelin-kuyov.jpg"),
+    ("Bog'dagi to'y lahzasi", "Murodjon", "Tabiat", 0, ["to'y", "tashqi", "tabiiy yorug'lik"], "bog-toy.jpg"),
+    ("Oilaviy fotosessiya", "Dilnoza Karimova", "Oilaviy", 1, ["oila", "studiya", "iliq ranglar"], "oilaviy.jpg"),
+    ("Bolalar fotosessiyasi", "Murodjon", "Bolalar", 1, ["bolalar", "oila", "studiya"], "qizcha.jpg"),
+    ("Studiyadagi portret", "Murodjon", "Portret", 2, ["portret", "studiya", "past yorug'lik"], "portret.jpg"),
+    ("Biznes portret", "Murodjon", "Studiya", 2, ["portret", "oq fon", "biznes"], "biznes.jpg"),
+    ("Nikoh uzuklari", "Murodjon", "To'y", 12, ["to'y", "detallar", "tabiiy yorug'lik"], "nikoh-uzuklari.jpg"),
+    ("Kuzgi oilaviy sayr", "Dilnoza Karimova", "Tabiat", 11, ["oila", "tashqi", "kuz"], "kuzgi-sayr.jpg"),
+    ("Sharlar bilan", "Dilnoza Karimova", "Bolalar", 9, ["bolalar", "studiya", "bayram"], "sharlar.jpg"),
+    ("Oq-qora portret", "Murodjon", "Portret", 13, ["portret", "oq-qora", "past yorug'lik"], "oq-qora-portret.jpg"),
+    ("Kadr ortida", "Murodjon", "Studiya", 8, ["studiya", "kadr ortida"], "kadr-ortida.jpg"),
 ]
 
 DEMO_CLIENT_USERNAME = "aziza"
@@ -95,7 +107,15 @@ def make_image(palette, seed, size=(1200, 900)):
 class Command(BaseCommand):
     help = "Fotostudiya uchun demo ma'lumotlarni (kategoriya, mijoz, fotosessiya, surat) yaratadi."
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--rasmlarni-yangilash',
+            action='store_true',
+            help="Demo suratlarning rasmini demo_photos/ dagi fotolar bilan almashtiradi.",
+        )
+
     def handle(self, *args, **options):
+        refresh_images = options['rasmlarni_yangilash']
         categories = {name: Category.objects.get_or_create(name=name)[0] for name in PALETTES}
 
         clients = [
@@ -118,7 +138,7 @@ class Command(BaseCommand):
             )
             sessions.append(session)
 
-        for i, (title, photographer, category_name, session_idx, tag_names) in enumerate(PHOTOS):
+        for i, (title, photographer, category_name, session_idx, tag_names, filename) in enumerate(PHOTOS):
             session = sessions[session_idx]
             photo, created = Photo.objects.get_or_create(
                 title=title,
@@ -132,7 +152,14 @@ class Command(BaseCommand):
                 photo.session = session
             if photo.category is None:
                 photo.category = categories[category_name]
-            if not photo.image:
+            demo_file = DEMO_PHOTOS_DIR / filename
+            if demo_file.exists() and (not photo.image or refresh_images):
+                if photo.image:
+                    photo.image.delete(save=False)
+                with demo_file.open('rb') as f:
+                    photo.image.save(filename, File(f), save=False)
+            elif not photo.image:
+                # demo_photos/ bo'lmasa — Pillow bilan chizilgan oddiy namuna rasm
                 photo.image.save(f"demo_{i + 1}.jpg", ContentFile(make_image(PALETTES[category_name], seed=i)), save=False)
             photo.save()
             for name in tag_names:

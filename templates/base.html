@@ -27,9 +27,13 @@
                 <a href="{% url 'photostudio:photo_list' %}" {% if 'photo' in url_name %}class="active"{% endif %}>Galereya</a>
                 <a href="{% url 'photostudio:session_list' %}" {% if 'session' in url_name %}class="active"{% endif %}>Fotosessiyalar</a>
                 <a href="{% url 'photostudio:client_list' %}" {% if 'client' in url_name %}class="active"{% endif %}>Mijozlar</a>
+                <a href="{% url 'photostudio:booking_list' %}" {% if 'booking' in url_name %}class="active"{% endif %}>Bronlar{% if new_booking_count %} <span class="nav-badge">{{ new_booking_count }}</span>{% endif %}</a>
                 <a href="{% url 'photostudio:dashboard' %}" {% if url_name == 'dashboard' %}class="active"{% endif %}>Statistika</a>
                 {% elif user.is_authenticated %}
                 <a href="{% url 'photostudio:cabinet' %}" {% if url_name == 'cabinet' or 'photo' in url_name %}class="active"{% endif %}>Kabinetim</a>
+                {% endif %}
+                {% if not is_employee %}
+                <a href="{% url 'photostudio:booking_create' %}" {% if url_name == 'booking_create' %}class="active"{% endif %}>Bron qilish</a>
                 {% endif %}
                 <a href="{% url 'photostudio:about' %}" {% if url_name == 'about' %}class="active"{% endif %}>Men haqimda</a>
                 <a href="/api/">API</a>

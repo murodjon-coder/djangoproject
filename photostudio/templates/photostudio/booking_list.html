@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Bron so'rovlari{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <div>
+        <span class="eyebrow">Onlayn bron</span>
+        <h1>Bron so'rovlari</h1>
+        <p>Saytdan kelgan fotosessiya so'rovlari</p>
+    </div>
+    <nav class="segmented" aria-label="Holat bo'yicha saralash">
+        {% for value, label in statuses %}
+        <a href="?status={{ value }}" {% if current_status == value %}class="active"{% endif %}>{{ label }}{% for k, n in counts.items %}{% if k == value %} · {{ n }}{% endif %}{% endfor %}</a>
+        {% endfor %}
+    </nav>
+</div>
+
+<div class="rows">
+    {% for b in bookings %}
+    <a class="row row-session" href="{% url 'photostudio:booking_detail' b.pk %}">
+        <div class="date-block"><strong>{{ b.preferred_at|date:"d" }}</strong><span>{{ b.preferred_at|date:"M" }}</span></div>
+        <div>
+            <div class="title">{{ b.full_name }}</div>
+            <div class="sub">{{ b.phone }} · {{ b.preferred_at|date:"H:i" }}</div>
+        </div>
+        <div class="sub hide-sm">{{ b.category.name|default:"Turi ko'rsatilmagan" }}</div>
+        <div class="sub hide-sm">{{ b.created_at|timesince }} oldin</div>
+        <span class="badge badge-{{ b.status }}">{{ b.get_status_display }}</span>
+    </a>
+    {% empty %}
+    <div class="empty"><h3>So'rovlar yo'q</h3><p>Bu holatdagi bron so'rovlari topilmadi.</p></div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -12,20 +12,31 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
+
+from .env import env, env_bool, env_int, env_list, load_env_file
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Maxfiy sozlamalar .env faylidan o'qiladi (namuna: .env.example)
+load_env_file(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ektdeogacagj%c81o2zj*_yy5k%-k!02vku(9dtfw%hbk*(zv-'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env_bool('DJANGO_DEBUG', True)
 
-ALLOWED_HOSTS = []
+# SECURITY WARNING: keep the secret key used in production secret!
+# Kompyuterda ishlash uchun vaqtinchalik kalit; serverda albatta .env da DJANGO_SECRET_KEY beriladi.
+SECRET_KEY = env('DJANGO_SECRET_KEY', 'django-insecure-ektdeogacagj%c81o2zj*_yy5k%-k!02vku(9dtfw%hbk*(zv-')
+if not DEBUG and SECRET_KEY.startswith('django-insecure'):
+    raise ImproperlyConfigured("Serverda DJANGO_SECRET_KEY ni .env faylida bering (DEBUG=False).")
+
+ALLOWED_HOSTS = env_list('DJANGO_ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
+CSRF_TRUSTED_ORIGINS = env_list('DJANGO_CSRF_TRUSTED_ORIGINS')
 
 
 # Application definition
@@ -62,6 +73,10 @@ MIDDLEWARE = [
     # 9-hafta: o'zimning middleware — so'rov manzili va vaqtini konsolga chiqaradi
     'photostudio.middleware.RequestTimingMiddleware',
 ]
+
+if not DEBUG:
+    # Serverda static fayllarni (CSS, rasm, video) WhiteNoise samarali beradi — SecurityMiddleware'dan keyin
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 
 ROOT_URLCONF = 'config.urls'
 
@@ -138,6 +153,30 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Foydalanuvchi yuklagan fayllar (11-hafta)
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+# Serverda media fayllarni Django'ning o'zi bersinmi (PythonAnywhere'da "static files" xaritasi afzal)
+SERVE_MEDIA = env_bool('DJANGO_SERVE_MEDIA', False)
+
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    # DEBUG=False bo'lganda: siqilgan va versiyalangan static fayllar (style.css → style.4f3a….css)
+    'staticfiles': {
+        'BACKEND': (
+            'django.contrib.staticfiles.storage.StaticFilesStorage' if DEBUG
+            else 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+        ),
+    },
+}
+
+
+# Xavfsizlik — faqat serverda (DEBUG=False) yoqiladi
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = env_bool('DJANGO_SSL_REDIRECT', True)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = env_int('DJANGO_HSTS_SECONDS', 3600)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
 
 
 # Autentifikatsiya (8-hafta)
@@ -162,6 +201,10 @@ REST_FRAMEWORK = {
 
 MAILERS = {
     'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+        # Kompyuterda xatlar konsolga chiqadi, serverda SMTP orqali yuboriladi
+        'BACKEND': (
+            'django.core.mail.backends.console.EmailBackend' if DEBUG
+            else 'django.core.mail.backends.smtp.EmailBackend'
+        ),
     },
 }
