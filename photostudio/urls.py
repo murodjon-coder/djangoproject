@@ -1,0 +1,10 @@
+from django.urls import path
+
+from . import views
+
+app_name = 'photostudio'
+
+urlpatterns = [
+    path('photos/', views.photo_list, name='photo_list'),
+    path('photos/cbv/', views.PhotoListView.as_view(), name='photo_list_cbv'),
+]

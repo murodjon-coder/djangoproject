@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Suratlar ro'yxati{% endblock %}
+
+{% block content %}
+<h1>Suratlar ro'yxati</h1>
+<p>Ushbu sahifa: <strong>{{ view_type }}</strong></p>
+
+<table>
+    <thead>
+        <tr><th>#</th><th>Nomi</th><th>Fotograf</th><th>Sana</th></tr>
+    </thead>
+    <tbody>
+        {% for photo in photos %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ photo.title }}</td>
+            <td>{{ photo.photographer }}</td>
+            <td>{{ photo.date|date:"d.m.Y" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">Hozircha suratlar yo'q.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
