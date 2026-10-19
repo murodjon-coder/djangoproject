@@ -7,6 +7,9 @@ app_name = 'photostudio'
 urlpatterns = [
     path('', views.home, name='home'),
     path('about/', views.about, name='about'),
+    path('after-login/', views.after_login, name='after_login'),
+    path('cabinet/', views.cabinet, name='cabinet'),
+    path('dashboard/', views.dashboard, name='dashboard'),
 
     # Suratlar (4–6, 11, 14-haftalar)
     path('photos/', views.photo_list, name='photo_list'),
@@ -22,6 +25,7 @@ urlpatterns = [
     path('clients/<int:pk>/', views.ClientDetailView.as_view(), name='client_detail'),
     path('clients/<int:pk>/edit/', views.ClientUpdateView.as_view(), name='client_update'),
     path('clients/<int:pk>/delete/', views.ClientDeleteView.as_view(), name='client_delete'),
+    path('clients/<int:pk>/account/', views.client_account_create, name='client_account_create'),
 
     # Fotosessiyalar (14-hafta)
     path('sessions/', views.SessionListView.as_view(), name='session_list'),

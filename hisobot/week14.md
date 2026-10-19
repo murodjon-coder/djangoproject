@@ -36,6 +36,8 @@ Natijada repozitoriy og'irlashadi, maxfiy ma'lumot oshkor bo'ladi va boshqalar b
 | Xodim (ro'yxatdan o'tgan) | suratlar, mijozlar, fotosessiyalarni ko'rish / qo'shish / tahrirlash |
 | Administrator (`is_staff`) | + o'chirish va admin panel |
 
+> Keyinchalik mijoz kabineti qo'shilgach, **Mijoz** roli alohida ajratildi — [qoshimcha.md](qoshimcha.md#rollar-yangilangan).
+
 **Git:**
 
 ```bash

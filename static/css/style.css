@@ -736,6 +736,7 @@ a.row:hover { background: var(--surface-2); }
 /* Tahrirlashda joriy rasm havolasi va "tozalash" belgisi */
 .form-field a { color: var(--accent); }
 .form-field input[type=checkbox] { accent-color: var(--accent); width: 16px; height: 16px; vertical-align: middle; }
+.form-field input[type=checkbox] + label { display: inline; margin: 0 0 0 6px; font-weight: 500; color: var(--text-soft); }
 
 .form-field .help { display: block; margin-top: 6px; color: var(--muted); font-size: .84rem; }
 .form-field .help ul { margin: 4px 0 0; padding-left: 18px; }
@@ -906,8 +907,309 @@ a.row:hover { background: var(--surface-2); }
 .footer-brand { display: inline-flex; align-items: center; gap: 12px; }
 .footer-brand img { height: 30px; width: auto; border-radius: 6px; }
 
+/* ---------- Qidiruv va filtrlar (galereya) ---------- */
+.filters {
+    display: grid;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 6px 6px 16px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: var(--surface);
+    max-width: 640px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.search svg { width: 18px; height: 18px; flex: none; color: var(--muted); }
+
+.search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    outline: none;
+}
+
+.search input::placeholder { color: #66655f; }
+
+.chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.chip-label {
+    margin-right: 4px;
+    font-size: .76rem;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    font-size: .86rem;
+    color: var(--text-soft);
+    transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+
+.filter-chip span { color: var(--muted); font-size: .78rem; }
+a.filter-chip:hover { border-color: var(--muted); color: var(--text); }
+.filter-chip.active { background: var(--text); border-color: var(--text); color: var(--bg); font-weight: 600; }
+.filter-chip.active span { color: var(--bg); opacity: .6; }
+.filter-chip.tag { border-style: dashed; }
+.filter-chip.tag.active { border-style: solid; background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+.reset-filters { font-size: .9rem; justify-self: start; }
+
+.tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.photo-card .caption-tags { margin-top: 4px; color: var(--accent); font-size: .78rem; }
+
+/* Teglar formada — checkbox'lar chip ko'rinishida */
+.form-field div:has(> div > label > .chip-check) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.form-field label:has(> .chip-check) {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 7px 14px;
+    border: 1px dashed var(--line-strong);
+    border-radius: 999px;
+    font-weight: 500;
+    color: var(--text-soft);
+    cursor: pointer;
+}
+
+.form-field label:has(> .chip-check:checked) {
+    border-style: solid;
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--text);
+}
+
+/* ---------- Sahifalash ---------- */
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 32px;
+}
+
+.page-link {
+    min-width: 40px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    text-align: center;
+    font-size: .9rem;
+    color: var(--text-soft);
+}
+
+a.page-link:hover { border-color: var(--muted); color: var(--text); }
+.page-link.current { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.page-link.disabled { opacity: .35; }
+
+/* ---------- Mijoz kabineti ---------- */
+.cabinet-session { margin-bottom: 40px; }
+
+.cabinet-session-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.cabinet-session-head h3 { margin: 0 0 4px; font-size: 1.4rem; }
+.cabinet-session-head p { margin: 0; }
+
+.photo-card .download {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+/* ---------- Statistika paneli ---------- */
+.kpis-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.dash-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: 16px;
+}
+
+.span-2 { grid-column: span 2; }
+
+.chart-panel { padding: 24px; }
+.chart-head { margin-bottom: 20px; }
+.chart-head h2 { margin: 0 0 4px; font-size: 1.35rem; }
+.chart-head p { margin: 0; font-size: .88rem; }
+
+/* Hover tooltip — barcha grafik elementlari uchun */
+[data-tip] { position: relative; outline: none; }
+
+[data-tip]:hover::after,
+[data-tip]:focus-visible::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%);
+    z-index: 5;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: .8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* Ustunli grafik (oylik daromad) */
+.columns {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    align-items: end;
+    height: 260px;
+    padding-top: 8px;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    cursor: default;
+}
+
+.column-value { font-size: .8rem; color: var(--text-soft); margin-bottom: 6px; white-space: nowrap; }
+
+.column-track {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    border-bottom: 1px solid var(--line);
+}
+
+.column-bar {
+    width: 24px;
+    min-height: 2px;
+    border-radius: 4px 4px 0 0;
+    background: var(--surface-3);
+    transition: filter .15s ease;
+}
+
+.column-bar.current,
+.column:hover .column-bar,
+.column:focus-visible .column-bar { background: var(--accent); }
+
+.column-label {
+    margin-top: 10px;
+    font-size: .78rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.columns + .table-view { margin-top: 20px; }
+
+/* Gorizontal ustunlar */
+.hbars { display: grid; gap: 14px; }
+
+.hbar {
+    display: grid;
+    grid-template-columns: minmax(90px, 38%) minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    font-size: .9rem;
+}
+
+.hbar[data-tip]:hover::after,
+.hbar[data-tip]:focus-visible::after { left: 60%; }
+
+.hbar-label { display: inline-flex; align-items: center; gap: 8px; color: var(--text-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hbar-value { color: var(--text); font-variant-numeric: tabular-nums; }
+
+.hbar-track { height: 10px; border-radius: 0 4px 4px 0; background: var(--surface-2); }
+.hbar-fill { height: 100%; min-width: 2px; border-radius: 0 4px 4px 0; background: var(--accent); }
+
+.fill-planned { background: var(--planned); }
+.fill-done { background: var(--done); }
+.fill-cancelled { background: var(--danger); }
+
+.dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.dot-planned { background: var(--planned); }
+.dot-done { background: var(--done); }
+.dot-cancelled { background: var(--danger); }
+
+/* Jadvallar */
+.data-table,
+.table-view table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+
+.data-table th,
+.data-table td,
+.table-view th,
+.table-view td {
+    padding: 10px 8px;
+    border-top: 1px solid var(--line);
+    text-align: left;
+}
+
+.data-table th,
+.table-view th { border-top: 0; color: var(--muted); font-size: .76rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.data-table .num,
+.table-view .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+.inline-bar { display: grid; grid-template-columns: minmax(60px, 1fr) auto; align-items: center; gap: 10px; }
+
+.table-view { margin-top: 20px; }
+.table-view summary { cursor: pointer; color: var(--muted); font-size: .88rem; }
+.table-view summary:hover { color: var(--text); }
+.table-view table { margin-top: 12px; }
+
+.rows-flat { border: 0; background: none; border-radius: 0; }
+.rows-flat .row { padding: 12px 0; }
+.row-top { grid-template-columns: 32px minmax(0, 1fr) auto; }
+.rank { font-family: var(--font-display); font-size: 1.3rem; color: var(--muted); }
+
 /* ---------- Moslashuvchanlik ---------- */
 @media (max-width: 980px) {
+    .dash-grid { grid-template-columns: minmax(0, 1fr); }
+    .span-2 { grid-column: auto; }
+    .kpis-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .hero,
     .detail,
     .about { grid-template-columns: 1fr; }
@@ -952,7 +1254,9 @@ a.row:hover { background: var(--surface-2); }
     .stat { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; }
     .stat:first-child { border-top: 0; }
 
-    .kpis { grid-template-columns: 1fr 1fr; }
+    .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .kpi strong { font-size: 1.4rem; overflow-wrap: anywhere; }
+    .table-scroll { overflow-x: auto; margin: 0 -24px; padding: 0 24px; }
 
     .row { padding: 14px 16px; gap: 14px; }
     .row-session { grid-template-columns: auto minmax(0, 1fr) auto; }

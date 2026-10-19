@@ -16,7 +16,27 @@ def media_tmp(settings, tmp_path):
 
 @pytest.fixture
 def user(django_user_model):
-    return django_user_model.objects.create_user(username='testuser', password='Parol-12345')
+    """Xodim ("Xodimlar" guruhida) — galereya, mijozlar va fotosessiyalarga kira oladi."""
+    from django.contrib.auth.models import Group
+
+    employee = django_user_model.objects.create_user(username='testuser', password='Parol-12345')
+    employee.groups.add(Group.objects.get_or_create(name='Xodimlar')[0])
+    return employee
+
+
+@pytest.fixture
+def customer(django_user_model, studio_client):
+    """Mijoz akkaunti — studio_client profiliga One-to-One bog'langan."""
+    account = django_user_model.objects.create_user(username='mijoz', password='Parol-12345')
+    studio_client.user = account
+    studio_client.save()
+    return account
+
+
+@pytest.fixture
+def customer_client(client, customer):
+    client.force_login(customer)
+    return client
 
 
 @pytest.fixture

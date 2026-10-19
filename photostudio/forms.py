@@ -1,18 +1,34 @@
 from django import forms
 from django.utils import timezone
 
-from .models import Client, Photo, Session
+from .models import Client, Photo, Session, Tag
+
+
+class ImageInput(forms.ClearableFileInput):
+    """Rasm maydoni — o'zbekcha yozuvlar bilan (standart tarjimada "Clear" → "Aniq" bo'lib qolgan)."""
+
+    initial_text = "Hozirgi rasm"
+    input_text = "Yangisini tanlash"
+    clear_checkbox_label = "Rasmni o'chirish"
 
 
 class PhotoForm(forms.ModelForm):
-    """6-hafta: Photo modeli maydonlariga mos forma (11-haftada rasm qo'shilgan)."""
+    """6-hafta: Photo modeli maydonlariga mos forma (11-haftada rasm, keyin teglar qo'shilgan)."""
+
+    new_tags = forms.CharField(
+        label="Yangi teglar",
+        required=False,
+        help_text="Ro'yxatda yo'q teglarni vergul bilan yozing: masalan, <em>oq fon, kechqurun</em>",
+        widget=forms.TextInput(attrs={'placeholder': 'oq fon, kechqurun'}),
+    )
 
     class Meta:
         model = Photo
-        fields = ['title', 'photographer', 'date', 'category', 'session', 'image']
+        fields = ['title', 'photographer', 'date', 'category', 'tags', 'new_tags', 'session', 'image']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
-            'image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+            'tags': forms.CheckboxSelectMultiple(attrs={'class': 'chip-check'}),
+            'image': ImageInput(attrs={'accept': 'image/*'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -34,6 +50,23 @@ class PhotoForm(forms.ModelForm):
         if date > timezone.localdate():
             raise forms.ValidationError("Suratga olingan sana kelajakda bo'lishi mumkin emas.")
         return date
+
+    def clean_new_tags(self):
+        names = [name.strip() for name in self.cleaned_data['new_tags'].split(',')]
+        names = [name for name in names if name]
+        too_long = [name for name in names if len(name) > 50]
+        if too_long:
+            raise forms.ValidationError("Teg nomi 50 belgidan oshmasligi kerak.")
+        return names
+
+    def save(self, commit=True):
+        photo = super().save(commit=commit)
+        if commit:
+            # Many-to-Many: yangi teglarni yaratib (yoki borini topib) suratga qo'shamiz
+            for name in self.cleaned_data['new_tags']:
+                tag = Tag.objects.filter(name__iexact=name).first() or Tag.objects.create(name=name)
+                photo.tags.add(tag)
+        return photo
 
 
 class ClientForm(forms.ModelForm):

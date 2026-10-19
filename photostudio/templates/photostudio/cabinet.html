@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Kabinetim{% endblock %}
+
+{% block content %}
+{% if client %}
+<div class="page-head">
+    <div class="profile">
+        <span class="avatar lg accent">{{ client.full_name|first }}</span>
+        <div>
+            <span class="eyebrow">Shaxsiy kabinet</span>
+            <h1>Salom, {{ client.full_name }}!</h1>
+            <p>{{ client.phone }}{% if client.email %} · {{ client.email }}{% endif %}</p>
+        </div>
+    </div>
+</div>
+
+<div class="kpis">
+    <div class="kpi"><strong>{{ sessions|length }}</strong><span>fotosessiya</span></div>
+    <div class="kpi"><strong>{{ photo_count }}</strong><span>tayyor surat</span></div>
+    <div class="kpi">
+        {% if upcoming %}
+        <strong>{{ upcoming.0.scheduled_at|date:"d.m, H:i" }}</strong><span>keyingi fotosessiya</span>
+        {% else %}
+        <strong>—</strong><span>rejalashtirilgan sessiya yo'q</span>
+        {% endif %}
+    </div>
+</div>
+
+{% if upcoming %}
+<section class="section">
+    <div class="section-head"><h2>Kelgusi fotosessiyalar</h2></div>
+    <div class="rows">
+        {% for s in upcoming %}
+        <div class="row row-session">
+            <div class="date-block"><strong>{{ s.scheduled_at|date:"d" }}</strong><span>{{ s.scheduled_at|date:"M" }}</span></div>
+            <div>
+                <div class="title">{{ s.scheduled_at|date:"l, H:i" }}</div>
+                <div class="sub">{{ s.location }} · {{ s.duration_minutes }} daqiqa</div>
+            </div>
+            <div class="sub hide-sm">Fotograf: {{ s.photographer }}</div>
+            <div class="num hide-sm">{{ s.price|intcomma }} so'm</div>
+            <span class="badge badge-{{ s.status }}">{{ s.get_status_display }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<section class="section">
+    <div class="section-head"><h2>Mening suratlarim</h2></div>
+    {% for s in sessions %}
+        {% if s.photos.all %}
+        <div class="cabinet-session">
+            <div class="cabinet-session-head">
+                <div>
+                    <h3>{{ s.scheduled_at|date:"d E Y" }}</h3>
+                    <p class="muted">{{ s.location }} · fotograf {{ s.photographer }} · {{ s.photos.all|length }} ta surat</p>
+                </div>
+                <span class="badge badge-{{ s.status }}">{{ s.get_status_display }}</span>
+            </div>
+            <div class="gallery">
+                {% for photo in s.photos.all %}
+                <div class="photo-card">
+                    <a href="{% url 'photostudio:photo_detail' photo.id %}">
+                        {% if photo.image %}<img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="lazy">{% else %}<div class="no-image">Rasm yuklanmagan</div>{% endif %}
+                    </a>
+                    <div class="caption">
+                        <h3>{{ photo.title }}</h3>
+                        {% if photo.image %}<a class="download" href="{{ photo.image.url }}" download>↓ Yuklab olish</a>{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    {% empty %}
+    <div class="empty"><h3>Hali fotosessiya yo'q</h3><p>Fotostudiyaga yoziling — suratlaringiz shu yerda paydo bo'ladi.</p></div>
+    {% endfor %}
+    {% if sessions and not photo_count %}
+    <div class="empty"><h3>Suratlar tayyorlanmoqda</h3><p>Fotosessiyadan keyin suratlaringiz shu yerda paydo bo'ladi.</p></div>
+    {% endif %}
+</section>
+
+{% elif is_employee %}
+<div class="error-page">
+    <div class="code" style="font-size: 6rem;">✦</div>
+    <h1>Siz xodimsiz</h1>
+    <p>Shaxsiy kabinet mijozlar uchun. Mijozlar ro'yxatidan istalgan mijozga kabinet yaratishingiz mumkin.</p>
+    <a class="btn" href="{% url 'photostudio:client_list' %}">Mijozlarga o'tish</a>
+</div>
+
+{% else %}
+<div class="error-page">
+    <div class="code" style="font-size: 6rem;">✦</div>
+    <h1>Kabinet hali bog'lanmagan</h1>
+    <p>
+        Siz <strong>{{ user.username }}</strong> sifatida kirdingiz, lekin akkauntingiz hali fotostudiya mijoziga bog'lanmagan.
+        Fotostudiyaga murojaat qiling — administrator akkauntingizni mijoz profilingizga bog'laydi
+        va bu yerda o'z fotosessiyalaringiz hamda suratlaringizni ko'rasiz.
+    </p>
+    <a class="btn btn-ghost" href="{% url 'photostudio:home' %}">Bosh sahifa</a>
+</div>
+{% endif %}
+{% endblock %}

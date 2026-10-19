@@ -15,12 +15,14 @@ bir joyda boshqarish, rasm yuklash, REST API va testlar.
 | Model | Maydonlar | Bog'lanish |
 |---|---|---|
 | `Category` | `name` | — |
-| `Client` (mijoz) | `full_name`, `phone`, `email`, `created_at` | — |
+| `Tag` | `name`, `slug` | — |
+| `Client` (mijoz) | `full_name`, `phone`, `email`, `created_at`, `user` | `user` → **User** (One-to-One, shaxsiy kabinet) |
 | `Session` (fotosessiya) | `client`, `photographer`, `scheduled_at`, `duration_minutes`, `location`, `price`, `status`, `notes` | `client` → **Client** (ForeignKey, bitta mijozda ko'p sessiya) |
-| `Photo` (surat) | `title`, `photographer`, `date`, `category`, `image`, `session` | `category` → **Category**, `session` → **Session** (ForeignKey) |
+| `Photo` (surat) | `title`, `photographer`, `date`, `category`, `image`, `session`, `tags` | `category` → **Category**, `session` → **Session** (ForeignKey), `tags` ↔ **Tag** (Many-to-Many) |
 
 ```
-Client 1 ──── * Session 1 ──── * Photo * ──── 1 Category
+User 1 ──── 1 Client 1 ──── * Session 1 ──── * Photo * ──── 1 Category
+                                                  * ──── * Tag
 ```
 
 ### Sahifalar
@@ -29,14 +31,15 @@ Client 1 ──── * Session 1 ──── * Photo * ──── 1 Category
 |---|---|---|
 | `/` | Bosh sahifa (statistika, so'nggi suratlar, video) | hamma |
 | `/about/` | Men haqimda (shaxsiy surat, video, JDU logotipi) | hamma |
-| `/photos/` | Suratlar ro'yxati — function-based view | login qilganlar |
-| `/photos/cbv/` | Suratlar ro'yxati — ListView | login qilganlar |
-| `/photos/add/` | Surat qo'shish (rasm yuklash bilan) | login qilganlar |
-| `/photos/<id>/` | Surat haqida batafsil | login qilganlar |
-| `/photos/<id>/edit/` | Suratni tahrirlash | login qilganlar |
-| `/photos/<id>/delete/` | Suratni o'chirish | faqat admin |
-| `/clients/`, `/clients/add/`, `/clients/<id>/`, `/clients/<id>/edit/`, `/clients/<id>/delete/` | Mijozlar CRUD | login qilganlar (o'chirish — admin) |
-| `/sessions/`, `/sessions/add/`, `/sessions/<id>/`, `/sessions/<id>/edit/`, `/sessions/<id>/delete/` | Fotosessiyalar CRUD, holat bo'yicha saralash | login qilganlar (o'chirish — admin) |
+| `/cabinet/` | Mijozning shaxsiy kabineti — faqat o'z fotosessiyalari va suratlari | mijoz |
+| `/photos/` | Galereya — function-based view (+ qidiruv `?q=`, filtr `?category=`, `?tag=`, sahifalash) | xodim |
+| `/photos/cbv/` | Galereya — ListView | xodim |
+| `/photos/add/`, `/photos/<id>/edit/` | Surat qo'shish / tahrirlash (rasm, teglar) | xodim |
+| `/photos/<id>/` | Surat haqida batafsil | xodim; mijoz — faqat o'z surati |
+| `/photos/<id>/delete/` | Suratni o'chirish | admin |
+| `/clients/...` | Mijozlar CRUD + `/clients/<id>/account/` — kabinet yaratish | xodim (o'chirish — admin) |
+| `/sessions/...` | Fotosessiyalar CRUD, holat bo'yicha saralash | xodim (o'chirish — admin) |
+| `/dashboard/` | Statistika paneli | xodim |
 | `/accounts/register/`, `/accounts/login/`, `/accounts/logout/` | Ro'yxatdan o'tish, kirish, chiqish | hamma |
 | `/api/photostudio/`, `/api/photostudio/<id>/` | REST API (DRF) | o'qish — hamma, yozish — login qilganlar |
 | `/admin/` | Django admin panel | admin |
@@ -44,8 +47,12 @@ Client 1 ──── * Session 1 ──── * Photo * ──── 1 Category
 ### Foydalanuvchi rollari
 
 1. **Mehmon** (login qilmagan) — bosh sahifa, "Men haqimda", API'ni o'qish; ro'yxatdan o'tishi mumkin.
-2. **Xodim** (ro'yxatdan o'tgan foydalanuvchi) — suratlar, mijozlar va fotosessiyalarni ko'rish, qo'shish, tahrirlash.
-3. **Administrator** (`is_staff`) — xodim qila oladigan hamma narsa + o'chirish + admin panel.
+2. **Mijoz** (oddiy ro'yxatdan o'tgan foydalanuvchi) — faqat o'z kabineti: fotosessiyalari va suratlari, yuklab olish.
+3. **Xodim** (`Xodimlar` guruhi) — galereya, mijozlar, fotosessiyalar, statistika: ko'rish, qo'shish, tahrirlash.
+4. **Administrator** (`is_staff`) — xodim qila oladigan hamma narsa + o'chirish + admin panel.
+
+> 14-haftada 3 ta rol bor edi (mehmon, xodim, administrator). Mijoz kabineti qo'shilgach, mijoz va xodim rollari ajratildi —
+> batafsil: [`hisobot/qoshimcha.md`](hisobot/qoshimcha.md).
 
 ---
 
@@ -62,7 +69,7 @@ pip install -r requirements.txt
 # 3) Ma'lumotlar bazasi
 python manage.py migrate
 python manage.py createsuperuser
-python manage.py seed_demo        # ixtiyoriy: demo mijoz, fotosessiya va suratlar
+python manage.py seed_demo        # ixtiyoriy: demo mijozlar, fotosessiyalar, suratlar, teglar va 'aziza' mijoz kabineti
 
 # 4) Server
 python manage.py runserver
@@ -77,7 +84,7 @@ pytest
 ```
 
 `pytest.ini` loyiha ildizida joylashgan va `DJANGO_SETTINGS_MODULE = config.settings` ni ko'rsatadi.
-Testlar `photostudio/tests/` papkasida: modellar, view'lar, formalar, API, middleware va rollar.
+Testlar `photostudio/tests/` papkasida (61 ta): modellar, view'lar, formalar, API, middleware, rollar, qidiruv, teglar, kabinet va statistika.
 
 ## 4. API (Django REST Framework)
 
@@ -92,11 +99,14 @@ curl http://127.0.0.1:8000/api/photostudio/1/     # bitta surat
 photostudio/                  ← loyiha ildizi (manage.py shu yerda)
 ├── config/                   ← loyiha sozlamalari (settings.py, urls.py, wsgi.py, asgi.py)
 ├── photostudio/              ← ilova (app)
-│   ├── models.py             ← Category, Client, Session, Photo
+│   ├── models.py             ← Category, Tag, Client, Session, Photo
 │   ├── views.py              ← FBV va CBV'lar
 │   ├── forms.py              ← PhotoForm, ClientForm, SessionForm
 │   ├── urls.py               ← ilova URL'lari (app_name = 'photostudio')
 │   ├── admin.py              ← admin panel sozlamalari
+│   ├── roles.py              ← rollar: is_employee, employee_required, mixin'lar
+│   ├── context_processors.py ← is_employee, client_profile — har bir template'da
+│   ├── backends.py           ← login katta-kichik harfga sezgir emas
 │   ├── middleware.py         ← RequestTimingMiddleware
 │   ├── serializers.py        ← PhotoSerializer
 │   ├── api.py                ← PhotoViewSet

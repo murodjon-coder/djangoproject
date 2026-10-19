@@ -75,7 +75,7 @@ path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
 | Login | Parol | Roli |
 |---|---|---|
 | `admin` | `Studio2026!` | administrator (superuser) |
-| `murodjon` | `Fotostudiya2026` | oddiy foydalanuvchi (ro'yxatdan o'tish sahifasi orqali yaratilgan) |
+| `murodjon` | `Fotostudiya2026` | ro'yxatdan o'tish sahifasi orqali yaratilgan; keyinroq `Xodimlar` guruhiga qo'shilgan ([qoshimcha.md](qoshimcha.md)) |
 
 > **Eslatma:** login (username) katta-kichik harfga qaramaydi — `Murodjon`, `MURODJON` va `murodjon` bir xil ishlaydi
 > ([`photostudio/backends.py`](../photostudio/backends.py), `AUTHENTICATION_BACKENDS` — `config/settings.py`).

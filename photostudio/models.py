@@ -1,7 +1,9 @@
+from django.conf import settings
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.text import slugify
 
 
 class Category(models.Model):
@@ -18,6 +20,30 @@ class Category(models.Model):
         return self.name
 
 
+class Tag(models.Model):
+    """Surat teglari: "oq fon", "tashqi", "kechqurun" va h.k. (Many-to-Many)."""
+
+    name = models.CharField("Nomi", max_length=50, unique=True)
+    slug = models.SlugField("Slug", max_length=60, unique=True, blank=True)
+
+    class Meta:
+        verbose_name = "Teg"
+        verbose_name_plural = "Teglar"
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(self.name) or 'teg'
+            slug, n = base, 2
+            while Tag.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug, n = f'{base}-{n}', n + 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+
 class Client(models.Model):
     """Fotostudiya mijozi (14-hafta)."""
 
@@ -30,6 +56,15 @@ class Client(models.Model):
     phone = models.CharField("Telefon", max_length=20, validators=[phone_validator])
     email = models.EmailField("Email", blank=True)
     created_at = models.DateTimeField("Qo'shilgan vaqt", auto_now_add=True)
+    # One-to-One: mijozning shaxsiy kabinetga kirish akkaunti (bitta mijoz — bitta akkaunt)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='client_profile',
+        verbose_name="Kabinet akkaunti",
+    )
 
     class Meta:
         verbose_name = "Mijoz"
@@ -108,6 +143,8 @@ class Photo(models.Model):
         related_name='photos',
         verbose_name="Fotosessiya",
     )
+    # Many-to-Many: bitta suratda ko'p teg, bitta teg ko'p suratda
+    tags = models.ManyToManyField(Tag, blank=True, related_name='photos', verbose_name="Teglar")
 
     class Meta:
         verbose_name = "Surat"

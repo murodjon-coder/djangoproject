@@ -75,6 +75,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'photostudio.context_processors.roles',
             ],
         },
     },
@@ -143,7 +144,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Login katta-kichik harfga sezgir bo'lmasligi uchun o'z backend'imiz
 AUTHENTICATION_BACKENDS = ['photostudio.backends.CaseInsensitiveModelBackend']
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'photostudio:home'
+LOGIN_REDIRECT_URL = 'photostudio:after_login'
 LOGOUT_REDIRECT_URL = 'photostudio:home'
 
 
