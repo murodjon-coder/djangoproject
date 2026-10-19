@@ -1,0 +1,15 @@
+$ curl http://127.0.0.1:8000/api/photostudio/1/
+{
+    "id": 1,
+    "title": "Kelin-kuyov portreti",
+    "photographer": "Murodjon",
+    "date": "2026-09-12",
+    "category": 2,
+    "category_name": "To'y",
+    "image": "http://127.0.0.1:8000/media/photos/2026/10/toy.jpg"
+}
+
+$ curl -X POST http://127.0.0.1:8000/api/photostudio/   # login qilmasdan
+{
+    "detail": "Authentication credentials were not provided."
+}

@@ -1,0 +1,14 @@
+$ python manage.py startapp photostudio
+CommandError: 'photostudio' conflicts with the name of an existing Python module and cannot be used as an app name. Please try another name.
+
+# Yechim: loyiha sozlamalari papkasini photostudio/ -> config/ deb qayta nomlash
+$ git mv photostudio config
+#   manage.py, config/asgi.py, config/wsgi.py:  'photostudio.settings' -> 'config.settings'
+#   config/settings.py:  ROOT_URLCONF = 'config.urls',  WSGI_APPLICATION = 'config.wsgi.application'
+
+$ python manage.py startapp photostudio
+$ ls photostudio
+__init__.py  admin.py  apps.py  migrations  models.py  tests.py  views.py
+
+$ python manage.py check
+System check identified no issues (0 silenced).

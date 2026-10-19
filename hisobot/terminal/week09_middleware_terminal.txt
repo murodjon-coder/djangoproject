@@ -1,0 +1,12 @@
+[Middleware] GET /photos/ -> 302 (1.97 ms)
+[19/Oct/2026 19:32:35] "GET /photos/ HTTP/1.1" 302 0
+[Middleware] GET /accounts/login/ -> 200 (4.52 ms)
+[19/Oct/2026 19:32:35] "GET /accounts/login/ HTTP/1.1" 200 1633
+[Middleware] GET /photos/1/ -> 302 (0.16 ms)
+[19/Oct/2026 19:32:35] "GET /photos/1/ HTTP/1.1" 302 0
+[Middleware] GET /accounts/register/ -> 200 (4.84 ms)
+[19/Oct/2026 19:32:35] "GET /accounts/register/ HTTP/1.1" 200 2338
+[Middleware] GET /admin/login/ -> 200 (6.10 ms)
+[19/Oct/2026 19:32:35] "GET /admin/login/ HTTP/1.1" 200 4302
+[Middleware] GET /photos/999/ -> 302 (0.12 ms)
+[19/Oct/2026 19:32:35] "GET /photos/999/ HTTP/1.1" 302 0

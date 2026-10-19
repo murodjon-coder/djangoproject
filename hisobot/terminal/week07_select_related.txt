@@ -1,0 +1,6 @@
+14 objects imported automatically (use -v 2 for details).
+
+select_related SIZ  : 4 ta SQL so'rov (1 + N muammosi)
+select_related BILAN: 1 ta SQL so'rov
+
+JOIN bilan SQL: SELECT "photostudio_photo"."id", "photostudio_photo"."title", "photostudio_photo"."photographer", "photostudio_photo"."date", "photostudio_photo"."category_id", "photostudio_category"."id", "photostudio_category"."name" FROM "photostudio_photo" LEFT OUTER JOIN "photostudio_category" ON ("photostudio_photo"."category_id" = "photostudio_category"."id") ORDER BY "photostudio_photo"."date" DESC, "photostudio_photo"."id" DESC
