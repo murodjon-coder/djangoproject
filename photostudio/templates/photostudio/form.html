@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Surat qo'shish{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
 
 {% block content %}
-<h1>Yangi surat qo'shish</h1>
+<h1>{{ page_title }}</h1>
 
 {# 11-hafta: fayl yuborish uchun enctype="multipart/form-data" shart #}
 <form method="post" enctype="multipart/form-data" class="form-card" novalidate>
@@ -11,7 +11,7 @@
     {% include '_form_fields.html' with form=form %}
     <div class="actions">
         <button type="submit">Saqlash</button>
-        <a class="button button-secondary" href="{% url 'photostudio:photo_list' %}">Bekor qilish</a>
+        <a class="button button-secondary" href="{{ cancel_url }}">Bekor qilish</a>
     </div>
 </form>
 {% endblock %}

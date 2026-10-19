@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Mijozlar{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <div>
+        <h1>Mijozlar</h1>
+        <p>Jami {{ clients|length }} ta mijoz</p>
+    </div>
+    <a class="button" href="{% url 'photostudio:client_create' %}">+ Mijoz qo'shish</a>
+</div>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr><th>F.I.Sh.</th><th>Telefon</th><th>Email</th><th>Fotosessiyalar</th></tr>
+        </thead>
+        <tbody>
+            {% for client in clients %}
+            <tr>
+                <td><a href="{% url 'photostudio:client_detail' client.pk %}">{{ client.full_name }}</a></td>
+                <td>{{ client.phone }}</td>
+                <td>{{ client.email|default:"—" }}</td>
+                <td>{{ client.session_count }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">Hozircha mijozlar yo'q.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

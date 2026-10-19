@@ -46,3 +46,29 @@ def image_file():
     buffer = io.BytesIO()
     Image.new('RGB', (10, 10), 'orange').save(buffer, format='PNG')
     return SimpleUploadedFile('test.png', buffer.getvalue(), content_type='image/png')
+
+
+@pytest.fixture
+def staff_client(client, django_user_model):
+    admin = django_user_model.objects.create_user(username='admin_test', password='Parol-12345', is_staff=True)
+    client.force_login(admin)
+    return client
+
+
+@pytest.fixture
+def studio_client():
+    from photostudio.models import Client
+    return Client.objects.create(full_name='Aziza Rahimova', phone='+998 90 123 45 67')
+
+
+@pytest.fixture
+def photo_session(studio_client):
+    from django.utils import timezone
+
+    from photostudio.models import Session
+    return Session.objects.create(
+        client=studio_client,
+        photographer='Murodjon',
+        scheduled_at=timezone.now() + datetime.timedelta(days=3),
+        price=500000,
+    )

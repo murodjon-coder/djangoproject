@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Sahifa topilmadi{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h1>404 — Sahifa topilmadi</h1>
+    <p>Siz qidirgan sahifa mavjud emas yoki o'chirilgan.</p>
+    <a class="button" href="{% url 'photostudio:home' %}">Bosh sahifaga qaytish</a>
+</div>
+{% endblock %}

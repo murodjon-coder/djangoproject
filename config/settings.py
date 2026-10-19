@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     # 12-hafta: Django REST Framework
     'rest_framework',
     # Mening ilovam (2-hafta)
@@ -140,8 +141,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Autentifikatsiya (8-hafta)
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'photostudio:photo_list'
-LOGOUT_REDIRECT_URL = 'login'
+LOGIN_REDIRECT_URL = 'photostudio:home'
+LOGOUT_REDIRECT_URL = 'photostudio:home'
 
 
 # Django REST Framework (12-hafta)

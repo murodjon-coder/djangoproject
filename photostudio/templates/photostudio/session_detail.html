@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Fotosessiya{% endblock %}
+
+{% block content %}
+<a class="back-link" href="{% url 'photostudio:session_list' %}">&larr; Fotosessiyalar</a>
+
+<div class="panel">
+    <h1>Fotosessiya <span class="badge badge-{{ photo_session.status }}">{{ photo_session.get_status_display }}</span></h1>
+    <dl class="info">
+        <dt>Mijoz</dt><dd><a href="{% url 'photostudio:client_detail' photo_session.client.pk %}">{{ photo_session.client.full_name }}</a> ({{ photo_session.client.phone }})</dd>
+        <dt>Sana va vaqt</dt><dd>{{ photo_session.scheduled_at|date:"d.m.Y H:i" }}</dd>
+        <dt>Davomiyligi</dt><dd>{{ photo_session.duration_minutes }} daqiqa</dd>
+        <dt>Fotograf</dt><dd>{{ photo_session.photographer }}</dd>
+        <dt>Joy</dt><dd>{{ photo_session.location }}</dd>
+        <dt>Narxi</dt><dd>{{ photo_session.price|intcomma }} so'm</dd>
+        {% if photo_session.notes %}<dt>Izoh</dt><dd>{{ photo_session.notes|linebreaksbr }}</dd>{% endif %}
+    </dl>
+    <div class="actions">
+        <a class="button" href="{% url 'photostudio:photo_create' %}?session={{ photo_session.pk }}">+ Surat qo'shish</a>
+        <a class="button button-secondary" href="{% url 'photostudio:session_update' photo_session.pk %}">Tahrirlash</a>
+        {% if user.is_staff %}
+        <a class="button button-danger" href="{% url 'photostudio:session_delete' photo_session.pk %}">O'chirish</a>
+        {% endif %}
+    </div>
+</div>
+
+<h2 style="margin-top: 28px;">Shu fotosessiyadagi suratlar</h2>
+<div class="grid">
+    {% for photo in photos %}
+    <a class="card" href="{% url 'photostudio:photo_detail' photo.id %}">
+        <div class="card-image">
+            {% if photo.image %}<img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="lazy">{% else %}Rasm yuklanmagan{% endif %}
+        </div>
+        <div class="card-body">
+            <h3>{{ photo.title }}</h3>
+            <p class="card-meta">{{ photo.category.name|default:"Kategoriyasiz" }}</p>
+        </div>
+    </a>
+    {% empty %}
+    <p>Hali surat qo'shilmagan.</p>
+    {% endfor %}
+</div>
+{% endblock %}

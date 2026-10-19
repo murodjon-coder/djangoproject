@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}{{ client.full_name }}{% endblock %}
+
+{% block content %}
+<a class="back-link" href="{% url 'photostudio:client_list' %}">&larr; Mijozlar ro'yxati</a>
+
+<div class="panel">
+    <h1>{{ client.full_name }}</h1>
+    <dl class="info">
+        <dt>Telefon</dt><dd>{{ client.phone }}</dd>
+        <dt>Email</dt><dd>{{ client.email|default:"—" }}</dd>
+        <dt>Qo'shilgan</dt><dd>{{ client.created_at|date:"d.m.Y H:i" }}</dd>
+    </dl>
+    <div class="actions">
+        <a class="button" href="{% url 'photostudio:session_create' %}?client={{ client.pk }}">+ Fotosessiya</a>
+        <a class="button button-secondary" href="{% url 'photostudio:client_update' client.pk %}">Tahrirlash</a>
+        {% if user.is_staff %}
+        <a class="button button-danger" href="{% url 'photostudio:client_delete' client.pk %}">O'chirish</a>
+        {% endif %}
+    </div>
+</div>
+
+<h2 style="margin-top: 28px;">Fotosessiyalari</h2>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr><th>Sana va vaqt</th><th>Fotograf</th><th>Narxi</th><th>Holati</th><th>Suratlar</th></tr>
+        </thead>
+        <tbody>
+            {% for s in sessions %}
+            <tr>
+                <td class="nowrap"><a href="{% url 'photostudio:session_detail' s.pk %}">{{ s.scheduled_at|date:"d.m.Y H:i" }}</a></td>
+                <td>{{ s.photographer }}</td>
+                <td class="nowrap">{{ s.price|intcomma }} so'm</td>
+                <td class="nowrap"><span class="badge badge-{{ s.status }}">{{ s.get_status_display }}</span></td>
+                <td>{{ s.photo_count }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">Bu mijozda hali fotosessiya yo'q.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
