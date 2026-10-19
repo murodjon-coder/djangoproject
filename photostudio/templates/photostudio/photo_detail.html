@@ -9,6 +9,7 @@
 <dl>
     <dt>ID</dt><dd>{{ photo.id }}</dd>
     <dt>Fotograf</dt><dd>{{ photo.photographer }}</dd>
+    <dt>Kategoriya</dt><dd>{{ photo.category.name|default:"—" }}</dd>
     <dt>Suratga olingan sana</dt><dd>{{ photo.date|date:"d.m.Y" }}</dd>
 </dl>
 {% endblock %}

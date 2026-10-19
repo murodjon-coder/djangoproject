@@ -9,7 +9,7 @@ class PhotoForm(forms.ModelForm):
 
     class Meta:
         model = Photo
-        fields = ['title', 'photographer', 'date']
+        fields = ['title', 'photographer', 'date', 'category']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
         }

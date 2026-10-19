@@ -8,7 +8,8 @@ from .models import Photo
 
 def photo_list(request):
     """4-hafta: function-based view — barcha suratlar ro'yxati."""
-    photos = Photo.objects.all()
+    # 7-hafta: select_related — kategoriya nomini JOIN orqali bitta so'rovda olamiz
+    photos = Photo.objects.select_related('category')
     return render(request, 'photostudio/photo_list.html', {
         'photos': photos,
         'view_type': 'Function-based view',
@@ -18,7 +19,7 @@ def photo_list(request):
 class PhotoListView(ListView):
     """4-hafta: xuddi shu ro'yxat, lekin class-based view (ListView) bilan."""
 
-    model = Photo
+    queryset = Photo.objects.select_related('category')
     template_name = 'photostudio/photo_list.html'
     context_object_name = 'photos'
     extra_context = {'view_type': 'Class-based view (ListView)'}
@@ -26,7 +27,7 @@ class PhotoListView(ListView):
 
 def photo_detail(request, id):
     """5-hafta: bitta suratni ko'rsatuvchi view (dinamik URL: photos/<int:id>/)."""
-    photo = get_object_or_404(Photo, id=id)
+    photo = get_object_or_404(Photo.objects.select_related('category'), id=id)
     return render(request, 'photostudio/photo_detail.html', {'photo': photo})
 
 
