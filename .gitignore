@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual muhit (loyihadan tashqarida, lekin ehtiyot uchun)
+venv/
+.venv/
+*_venv/
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+
+# Test va IDE
+.pytest_cache/
+.coverage
+.vscode/
+.idea/
+
+# Maxfiy sozlamalar
+.env
+
+# macOS
+.DS_Store
