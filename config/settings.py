@@ -42,13 +42,22 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # Xavfsizlik sarlavhalari (HTTPS ga yo'naltirish, HSTS va h.k.)
     'django.middleware.security.SecurityMiddleware',
+    # Session'larni yoqadi: request.session (login holati shu yerda saqlanadi)
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # Umumiy ishlar: URL oxiriga "/" qo'shish (APPEND_SLASH), taqiqlangan User-Agent'lar
     'django.middleware.common.CommonMiddleware',
+    # POST formalarni CSRF hujumidan himoya qiladi ({% csrf_token %} tekshiriladi)
     'django.middleware.csrf.CsrfViewMiddleware',
+    # Session asosida request.user ni aniqlaydi (kim kirgan)
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # Bir martalik xabarlar (messages.success(...)) ishlashi uchun
     'django.contrib.messages.middleware.MessageMiddleware',
+    # Saytni boshqa saytlar <iframe> ichida ochishini taqiqlaydi (clickjacking)
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 9-hafta: o'zimning middleware — so'rov manzili va vaqtini konsolga chiqaradi
+    'photostudio.middleware.RequestTimingMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
