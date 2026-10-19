@@ -22,8 +22,20 @@
             <dt>Fotograf</dt><dd>{{ photo.photographer }}</dd>
             <dt>Kategoriya</dt><dd>{{ photo.category.name|default:"—" }}</dd>
             <dt>Suratga olingan sana</dt><dd>{{ photo.date|date:"d.m.Y" }}</dd>
+            <dt>Fotosessiya</dt>
+            <dd>
+                {% if photo.session %}
+                <a href="{% url 'photostudio:session_detail' photo.session.pk %}">{{ photo.session }}</a>
+                {% else %}—{% endif %}
+            </dd>
             {% if photo.image %}<dt>Fayl</dt><dd>{{ photo.image.name }}</dd>{% endif %}
         </dl>
+        <div class="actions">
+            <a class="button" href="{% url 'photostudio:photo_update' photo.id %}">Tahrirlash</a>
+            {% if user.is_staff %}
+            <a class="button button-danger" href="{% url 'photostudio:photo_delete' photo.id %}">O'chirish</a>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

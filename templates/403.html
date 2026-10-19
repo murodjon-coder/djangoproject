@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Ruxsat yo'q{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h1>403 — Ruxsat yo'q</h1>
+    <p>Bu amalni faqat administrator bajara oladi.</p>
+    <a class="button" href="{% url 'photostudio:home' %}">Bosh sahifaga qaytish</a>
+</div>
+{% endblock %}

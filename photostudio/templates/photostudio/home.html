@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bosh sahifa{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <h1>Fotostudiya boshqaruv tizimi</h1>
+        <p>Suratlar, mijozlar va fotosessiyalarni bitta joyda boshqaring: kim, qachon, qayerda va qaysi suratlar olingan.</p>
+        <div class="actions">
+            {% if user.is_authenticated %}
+            <a class="button" href="{% url 'photostudio:session_create' %}">+ Fotosessiya rejalashtirish</a>
+            <a class="button button-secondary" style="color:#e9dfd2" href="{% url 'photostudio:photo_list' %}">Suratlar</a>
+            {% else %}
+            <a class="button" href="{% url 'login' %}">Kirish</a>
+            <a class="button button-secondary" style="color:#e9dfd2" href="{% url 'photostudio:register' %}">Ro'yxatdan o'tish</a>
+            {% endif %}
+        </div>
+    </div>
+    <video autoplay muted loop playsinline>
+        <source src="{% static 'video/intro.mp4' %}" type="video/mp4">
+    </video>
+</section>
+
+<div class="stats">
+    <a class="stat" href="{% url 'photostudio:photo_list' %}"><strong>{{ photo_count }}</strong><span>surat</span></a>
+    <a class="stat" href="{% url 'photostudio:client_list' %}"><strong>{{ client_count }}</strong><span>mijoz</span></a>
+    <a class="stat" href="{% url 'photostudio:session_list' %}?status=planned"><strong>{{ upcoming_count }}</strong><span>kelgusi fotosessiya</span></a>
+</div>
+
+<h2>So'nggi suratlar</h2>
+<div class="grid">
+    {% for photo in latest_photos %}
+    <a class="card" href="{% url 'photostudio:photo_detail' photo.id %}">
+        <div class="card-image"><img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="lazy"></div>
+        <div class="card-body">
+            <h3>{{ photo.title }}</h3>
+            <p class="card-meta">{{ photo.category.name|default:"Kategoriyasiz" }} &middot; {{ photo.date|date:"d.m.Y" }}</p>
+        </div>
+    </a>
+    {% empty %}
+    <p>Hozircha suratlar yo'q.</p>
+    {% endfor %}
+</div>
+{% endblock %}

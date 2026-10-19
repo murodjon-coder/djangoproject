@@ -6,13 +6,23 @@
 <div class="page-head">
     <div>
         <h1>Suratlar ro'yxati</h1>
-        <p>Ushbu sahifa: <span class="badge">{{ view_type }}</span> &middot; jami {{ photos|length }} ta surat</p>
+        <p>
+            Ushbu sahifa: <span class="badge">{{ view_type }}</span> &middot; jami {{ photos|length }} ta surat
+            &middot;
+            {% if request.resolver_match.url_name == 'photo_list' %}
+            <a href="{% url 'photostudio:photo_list_cbv' %}">CBV versiyasini ochish</a>
+            {% else %}
+            <a href="{% url 'photostudio:photo_list' %}">FBV versiyasini ochish</a>
+            {% endif %}
+        </p>
     </div>
     <a class="button" href="{% url 'photostudio:photo_create' %}">+ Surat qo'shish</a>
 </div>
 
 <div class="grid">
+    {# 4-hafta: {% for %} bilan ro'yxatni chiqarish #}
     {% for photo in photos %}
+    {# 5-hafta: {% url %} tegi orqali detail sahifaga havola #}
     <a class="card" href="{% url 'photostudio:photo_detail' photo.id %}">
         <div class="card-image">
             {% if photo.image %}
@@ -24,6 +34,7 @@
         <div class="card-body">
             <h3>{{ photo.title }}</h3>
             <p class="card-meta">{{ photo.photographer }} &middot; {{ photo.date|date:"d.m.Y" }}</p>
+            {# 7-hafta: select_related bilan olingan bog'liq model nomi #}
             <p class="card-meta">{{ photo.category.name|default:"Kategoriyasiz" }}</p>
         </div>
     </a>
