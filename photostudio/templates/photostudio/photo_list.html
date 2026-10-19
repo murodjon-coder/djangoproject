@@ -14,7 +14,7 @@
         {% for photo in photos %}
         <tr>
             <td>{{ forloop.counter }}</td>
-            <td>{{ photo.title }}</td>
+            <td><a href="{% url 'photostudio:photo_detail' photo.id %}">{{ photo.title }}</a></td>
             <td>{{ photo.photographer }}</td>
             <td>{{ photo.date|date:"d.m.Y" }}</td>
         </tr>

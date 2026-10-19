@@ -7,10 +7,10 @@
 </head>
 <body>
     <header class="site-header">
-        <a class="brand" href="/photos/">Fotostudiya</a>
+        <a class="brand" href="{% url 'photostudio:photo_list' %}">Fotostudiya</a>
         <nav>
-            <a href="/photos/">Suratlar (FBV)</a>
-            <a href="/photos/cbv/">Suratlar (CBV)</a>
+            <a href="{% url 'photostudio:photo_list' %}">Suratlar (FBV)</a>
+            <a href="{% url 'photostudio:photo_list_cbv' %}">Suratlar (CBV)</a>
         </nav>
     </header>
     <main class="container">
