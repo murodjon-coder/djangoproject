@@ -1,0 +1,6 @@
+from django.apps import AppConfig
+
+
+class PhotostudioConfig(AppConfig):
+    name = 'photostudio'
+    verbose_name = 'Fotostudiya'
