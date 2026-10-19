@@ -11,9 +11,17 @@
         <nav>
             <a href="{% url 'photostudio:photo_list' %}">Suratlar (FBV)</a>
             <a href="{% url 'photostudio:photo_list_cbv' %}">Suratlar (CBV)</a>
+            <a href="{% url 'photostudio:photo_create' %}">+ Surat qo'shish</a>
         </nav>
     </header>
     <main class="container">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="message message-{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
 </body>

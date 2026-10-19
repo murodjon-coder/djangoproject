@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Surat qo'shish{% endblock %}
+
+{% block content %}
+<h1>Yangi surat qo'shish</h1>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+    {% include '_form_fields.html' with form=form %}
+    <button type="submit">Saqlash</button>
+    <a href="{% url 'photostudio:photo_list' %}">Bekor qilish</a>
+</form>
+{% endblock %}

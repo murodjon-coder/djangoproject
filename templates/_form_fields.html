@@ -1,0 +1,18 @@
+{% comment %}
+  Forma maydonlarini xatolari bilan birga chiqaradigan umumiy qism (6-hafta).
+  Ishlatish: {% include '_form_fields.html' with form=form %}
+{% endcomment %}
+{% if form.non_field_errors %}
+<div class="form-errors">
+    {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+</div>
+{% endif %}
+
+{% for field in form %}
+<div class="form-field{% if field.errors %} has-error{% endif %}">
+    <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+    {{ field }}
+    {% if field.help_text %}<small class="help">{{ field.help_text|safe }}</small>{% endif %}
+    {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+</div>
+{% endfor %}
