@@ -5,29 +5,27 @@
 {% block content %}
 <div class="page-head">
     <div>
+        <span class="eyebrow">Mijozlar bazasi</span>
         <h1>Mijozlar</h1>
         <p>Jami {{ clients|length }} ta mijoz</p>
     </div>
-    <a class="button" href="{% url 'photostudio:client_create' %}">+ Mijoz qo'shish</a>
+    <a class="btn" href="{% url 'photostudio:client_create' %}">+ Mijoz qo'shish</a>
 </div>
 
-<div class="table-wrap">
-    <table>
-        <thead>
-            <tr><th>F.I.Sh.</th><th>Telefon</th><th>Email</th><th>Fotosessiyalar</th></tr>
-        </thead>
-        <tbody>
-            {% for client in clients %}
-            <tr>
-                <td><a href="{% url 'photostudio:client_detail' client.pk %}">{{ client.full_name }}</a></td>
-                <td>{{ client.phone }}</td>
-                <td>{{ client.email|default:"—" }}</td>
-                <td>{{ client.session_count }}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="4">Hozircha mijozlar yo'q.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="rows">
+    {% for client in clients %}
+    <a class="row row-client" href="{% url 'photostudio:client_detail' client.pk %}">
+        <span class="avatar">{{ client.full_name|first }}</span>
+        <div>
+            <div class="title">{{ client.full_name }}</div>
+            <div class="sub">{{ client.phone }}</div>
+        </div>
+        <div class="sub hide-sm">{{ client.email|default:"email yo'q" }}</div>
+        <div class="sub hide-sm">Mijoz: {{ client.created_at|date:"d.m.Y" }} dan</div>
+        <span class="badge plain">{{ client.session_count }} ta sessiya</span>
+    </a>
+    {% empty %}
+    <div class="empty"><h3>Hozircha mijozlar yo'q</h3></div>
+    {% endfor %}
 </div>
 {% endblock %}

@@ -39,14 +39,16 @@ class StaffRequiredMixin(UserPassesTestMixin):
 
 def home(request):
     """14-hafta: hamma ko'ra oladigan bosh sahifa."""
+    upcoming = Session.objects.filter(status=Session.Status.PLANNED, scheduled_at__gte=timezone.now())
     context = {
-        'latest_photos': Photo.objects.select_related('category').exclude(image='')[:4],
+        'latest_photos': Photo.objects.select_related('category').exclude(image='')[:6],
         'photo_count': Photo.objects.count(),
         'client_count': Client.objects.count(),
-        'upcoming_count': Session.objects.filter(
-            status=Session.Status.PLANNED, scheduled_at__gte=timezone.now(),
-        ).count(),
+        'upcoming_count': upcoming.count(),
     }
+    # Mijozlarning ismi va telefoni — maxfiy ma'lumot, faqat tizimga kirganlarga ko'rsatiladi
+    if request.user.is_authenticated:
+        context['upcoming_sessions'] = upcoming.select_related('client').order_by('scheduled_at')[:4]
     return render(request, 'photostudio/home.html', context)
 
 
@@ -151,7 +153,10 @@ class ClientDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['sessions'] = self.object.sessions.annotate(photo_count=Count('photos'))
+        sessions = self.object.sessions.annotate(photo_count=Count('photos'))
+        context['sessions'] = sessions
+        context['photo_total'] = sum(s.photo_count for s in sessions)
+        context['paid_total'] = sum(s.price for s in sessions if s.status == Session.Status.DONE)
         return context
 
 

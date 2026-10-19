@@ -3,9 +3,10 @@
 {% block title %}Sahifa topilmadi{% endblock %}
 
 {% block content %}
-<div class="form-card">
-    <h1>404 — Sahifa topilmadi</h1>
+<div class="error-page">
+    <div class="code">404</div>
+    <h1>Kadr topilmadi</h1>
     <p>Siz qidirgan sahifa mavjud emas yoki o'chirilgan.</p>
-    <a class="button" href="{% url 'photostudio:home' %}">Bosh sahifaga qaytish</a>
+    <a class="btn" href="{% url 'photostudio:home' %}">Bosh sahifaga qaytish</a>
 </div>
 {% endblock %}

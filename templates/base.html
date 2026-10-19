@@ -4,37 +4,46 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Fotostudiya{% endblock %} | Fotostudiya</title>
+    <title>{% block title %}Fotostudiya{% endblock %} · Fotostudiya</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&display=swap">
     {# 10-hafta: CSS fayl {% static %} tegi orqali ulanadi #}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d7ff45' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3C/svg%3E">
 </head>
 <body>
     <header class="site-header">
-        <div class="container">
+        <div class="container header-inner">
             <a class="brand" href="{% url 'photostudio:home' %}">
-                <img src="{% static 'images/jdu_logo.png' %}" alt="JDU logotipi">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m14.31 8 5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16 3.95 6.06M14.31 16H2.83m13.79-4-5.74 9.94"/></svg>
                 Fotostudiya
             </a>
+
             {% with url_name=request.resolver_match.url_name|default:'' %}
-            <nav>
+            <nav class="main-nav" aria-label="Asosiy menyu">
                 <a href="{% url 'photostudio:home' %}" {% if url_name == 'home' %}class="active"{% endif %}>Bosh sahifa</a>
-                <a href="{% url 'photostudio:photo_list' %}" {% if 'photo' in url_name %}class="active"{% endif %}>Suratlar</a>
+                <a href="{% url 'photostudio:photo_list' %}" {% if 'photo' in url_name %}class="active"{% endif %}>Galereya</a>
                 <a href="{% url 'photostudio:session_list' %}" {% if 'session' in url_name %}class="active"{% endif %}>Fotosessiyalar</a>
                 <a href="{% url 'photostudio:client_list' %}" {% if 'client' in url_name %}class="active"{% endif %}>Mijozlar</a>
                 <a href="{% url 'photostudio:about' %}" {% if url_name == 'about' %}class="active"{% endif %}>Men haqimda</a>
                 <a href="/api/">API</a>
             </nav>
             {% endwith %}
+
             <div class="user-menu">
                 {% if user.is_authenticated %}
-                <span>Salom, <strong>{{ user.username }}</strong>{% if user.is_staff %} <span class="badge">admin</span>{% endif %}</span>
+                <span class="user-chip">
+                    <span class="avatar {% if user.is_staff %}accent{% endif %}" title="{% if user.is_staff %}Administrator{% else %}Xodim{% endif %}">{{ user.username|first }}</span>
+                    <span class="name">{{ user.username }}</span>
+                </span>
                 <form method="post" action="{% url 'logout' %}" class="inline-form">
                     {% csrf_token %}
-                    <button type="submit" class="link-button">Chiqish</button>
+                    <button type="submit" class="btn-text">Chiqish</button>
                 </form>
                 {% else %}
-                <a href="{% url 'login' %}">Kirish</a>
-                <a href="{% url 'photostudio:register' %}">Ro'yxatdan o'tish</a>
+                <a class="btn-text" href="{% url 'login' %}">Kirish</a>
+                <a class="btn btn-sm" href="{% url 'photostudio:register' %}">Ro'yxatdan o'tish</a>
                 {% endif %}
             </div>
         </div>
@@ -53,9 +62,13 @@
     </main>
 
     <footer class="site-footer">
-        <div class="container">
-            <span>&copy; {% now "Y" %} Fotostudiya — Introduction to Django yakuniy loyihasi</span>
-            <span>Muallif: Murodjon</span>
+        <div class="container footer-inner">
+            <span class="footer-brand">
+                {# 10-hafta: JDU logotipi — static/images/jdu_logo.png #}
+                <img src="{% static 'images/jdu_logo.png' %}" alt="JDU logotipi">
+                Introduction to Django · yakuniy loyiha
+            </span>
+            <span>&copy; {% now "Y" %} Fotostudiya · Muallif: Murodjon</span>
         </div>
     </footer>
 </body>

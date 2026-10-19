@@ -23,6 +23,8 @@ Har bir hisobotda: **nazariy javoblar** (2–3 gap), **amaliy qism** (qaysi fayl
 | [14](week14.md) | Kichik loyiha | Photo + Client + Session, to'liq CRUD, rollar, git branch | `9294fa8`, `ef328b2` |
 | [15](week15.md) | Yakuniy loyiha | talablar ro'yxati, taqdimot ssenariysi, savol-javoblar | — |
 
+📌 Loyihani rivojlantirish g'oyalari: [**takliflar.md**](takliflar.md)
+
 ## ⚠️ Sizda qolgan ishlar
 
 1. **10-hafta:** `static/images/men.jpg` (shaxsiy surat) va `static/images/jdu_logo.png` (JDU logotipi) hozir **vaqtinchalik rasmlar** — o'zingiznikiga almashtiring (nomlari bir xil bo'lsin).

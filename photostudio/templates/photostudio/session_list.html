@@ -6,38 +6,35 @@
 {% block content %}
 <div class="page-head">
     <div>
+        <span class="eyebrow">Jadval</span>
         <h1>Fotosessiyalar</h1>
-        <p>
-            Saralash:
-            <a href="{% url 'photostudio:session_list' %}" {% if not current_status %}style="font-weight:700"{% endif %}>Hammasi</a>
-            {% for value, label in statuses %}
-            &middot; <a href="?status={{ value }}" {% if current_status == value %}style="font-weight:700"{% endif %}>{{ label }}</a>
-            {% endfor %}
-        </p>
+        <p>{{ photo_sessions|length }} ta fotosessiya</p>
     </div>
-    <a class="button" href="{% url 'photostudio:session_create' %}">+ Fotosessiya</a>
+    <div class="actions">
+        <nav class="segmented" aria-label="Holat bo'yicha saralash">
+            <a href="{% url 'photostudio:session_list' %}" {% if not current_status %}class="active"{% endif %}>Hammasi</a>
+            {% for value, label in statuses %}
+            <a href="?status={{ value }}" {% if current_status == value %}class="active"{% endif %}>{{ label }}</a>
+            {% endfor %}
+        </nav>
+        <a class="btn" href="{% url 'photostudio:session_create' %}">+ Fotosessiya</a>
+    </div>
 </div>
 
-<div class="table-wrap">
-    <table>
-        <thead>
-            <tr><th>Sana va vaqt</th><th>Mijoz</th><th>Fotograf</th><th>Joy</th><th>Narxi</th><th>Holati</th><th>Suratlar</th></tr>
-        </thead>
-        <tbody>
-            {% for s in photo_sessions %}
-            <tr>
-                <td class="nowrap"><a href="{% url 'photostudio:session_detail' s.pk %}">{{ s.scheduled_at|date:"d.m.Y H:i" }}</a></td>
-                <td><a href="{% url 'photostudio:client_detail' s.client.pk %}">{{ s.client.full_name }}</a></td>
-                <td>{{ s.photographer }}</td>
-                <td>{{ s.location }}</td>
-                <td class="nowrap">{{ s.price|intcomma }} so'm</td>
-                <td class="nowrap"><span class="badge badge-{{ s.status }}">{{ s.get_status_display }}</span></td>
-                <td>{{ s.photo_count }}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="7">Fotosessiyalar topilmadi.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="rows">
+    {% for s in photo_sessions %}
+    <a class="row row-session" href="{% url 'photostudio:session_detail' s.pk %}">
+        <div class="date-block"><strong>{{ s.scheduled_at|date:"d" }}</strong><span>{{ s.scheduled_at|date:"M" }}</span></div>
+        <div>
+            <div class="title">{{ s.client.full_name }}</div>
+            <div class="sub">{{ s.scheduled_at|date:"H:i" }} · {{ s.location }}</div>
+        </div>
+        <div class="sub hide-sm">{{ s.photographer }} · {{ s.photo_count }} ta surat</div>
+        <div class="num hide-sm">{{ s.price|intcomma }} so'm</div>
+        <span class="badge badge-{{ s.status }}">{{ s.get_status_display }}</span>
+    </a>
+    {% empty %}
+    <div class="empty"><h3>Fotosessiyalar topilmadi</h3></div>
+    {% endfor %}
 </div>
 {% endblock %}

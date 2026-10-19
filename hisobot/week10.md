@@ -75,7 +75,10 @@ JDU logotipi saytning har bir sahifasida, sarlavhadagi brand qismida ham bor ([`
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 ```
 
-[`static/css/style.css`](../static/css/style.css) — rang o'zgaruvchilari (`:root`), sarlavha va menyu, kartochkalar to'ri (grid), jadval, forma va xato uslublari, telefon ekrani uchun `@media` qoidalari.
+[`static/css/style.css`](../static/css/style.css) — **"Darkroom" dizayni**: qorong'i fon, yorqin laym (`#d7ff45`) urg'u rangi,
+sarlavhalar uchun *Fraunces* (serif), matn uchun *DM Sans* shrifti (Google Fonts, internet bo'lmasa tizim shriftlari ishlatiladi).
+Ichida: rang o'zgaruvchilari (`:root`), yopishqoq (sticky) sarlavha, masonry galereya (`columns`), sana bloklari bilan ro'yxatlar,
+forma va xato uslublari, telefon ekrani uchun `@media` qoidalari.
 
 ---
 

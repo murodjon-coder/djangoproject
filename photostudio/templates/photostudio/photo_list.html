@@ -1,45 +1,48 @@
 {% extends 'base.html' %}
 
-{% block title %}Suratlar ro'yxati{% endblock %}
+{% block title %}Galereya{% endblock %}
 
 {% block content %}
 <div class="page-head">
     <div>
+        <span class="eyebrow">Galereya</span>
         <h1>Suratlar ro'yxati</h1>
-        <p>
-            Ushbu sahifa: <span class="badge">{{ view_type }}</span> &middot; jami {{ photos|length }} ta surat
-            &middot;
-            {% if request.resolver_match.url_name == 'photo_list' %}
-            <a href="{% url 'photostudio:photo_list_cbv' %}">CBV versiyasini ochish</a>
-            {% else %}
-            <a href="{% url 'photostudio:photo_list' %}">FBV versiyasini ochish</a>
-            {% endif %}
-        </p>
+        <p>Jami {{ photos|length }} ta surat · ushbu sahifa: <span class="badge badge-accent">{{ view_type }}</span></p>
     </div>
-    <a class="button" href="{% url 'photostudio:photo_create' %}">+ Surat qo'shish</a>
+    <div class="actions">
+        {# 4-hafta: bir xil ro'yxat — function-based va class-based view #}
+        {% with url_name=request.resolver_match.url_name %}
+        <nav class="segmented" aria-label="View turi">
+            <a href="{% url 'photostudio:photo_list' %}" {% if url_name == 'photo_list' %}class="active"{% endif %}>FBV</a>
+            <a href="{% url 'photostudio:photo_list_cbv' %}" {% if url_name == 'photo_list_cbv' %}class="active"{% endif %}>CBV</a>
+        </nav>
+        {% endwith %}
+        <a class="btn" href="{% url 'photostudio:photo_create' %}">+ Surat qo'shish</a>
+    </div>
 </div>
 
-<div class="grid">
+<div class="gallery">
     {# 4-hafta: {% for %} bilan ro'yxatni chiqarish #}
     {% for photo in photos %}
     {# 5-hafta: {% url %} tegi orqali detail sahifaga havola #}
-    <a class="card" href="{% url 'photostudio:photo_detail' photo.id %}">
-        <div class="card-image">
-            {% if photo.image %}
-            <img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="lazy">
-            {% else %}
-            Rasm yuklanmagan
-            {% endif %}
-        </div>
-        <div class="card-body">
+    <a class="photo-card" href="{% url 'photostudio:photo_detail' photo.id %}">
+        {% if photo.image %}
+        <img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="lazy">
+        {% else %}
+        <div class="no-image">Rasm yuklanmagan</div>
+        {% endif %}
+        {# 7-hafta: select_related bilan olingan bog'liq model nomi #}
+        {% if photo.category %}<span class="chip">{{ photo.category.name }}</span>{% endif %}
+        <div class="caption">
             <h3>{{ photo.title }}</h3>
-            <p class="card-meta">{{ photo.photographer }} &middot; {{ photo.date|date:"d.m.Y" }}</p>
-            {# 7-hafta: select_related bilan olingan bog'liq model nomi #}
-            <p class="card-meta">{{ photo.category.name|default:"Kategoriyasiz" }}</p>
+            <p>{{ photo.photographer }} · {{ photo.date|date:"d.m.Y" }}</p>
         </div>
     </a>
     {% empty %}
-    <p>Hozircha suratlar yo'q.</p>
+    <div class="empty">
+        <h3>Hozircha suratlar yo'q</h3>
+        <p><a class="link" href="{% url 'photostudio:photo_create' %}">Birinchi suratni qo'shing</a></p>
+    </div>
     {% endfor %}
 </div>
 {% endblock %}
