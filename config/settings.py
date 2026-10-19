@@ -126,6 +126,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+# 10-hafta: loyiha darajasidagi static/ papkasi (CSS, rasm, video)
+STATICFILES_DIRS = [BASE_DIR / 'static']
+# collectstatic shu papkaga yig'adi (serverga joylashda kerak bo'ladi)
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 # Autentifikatsiya (8-hafta)

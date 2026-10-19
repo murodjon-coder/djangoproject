@@ -5,7 +5,7 @@
 {% block content %}
 <div class="auth-card">
     <h1>Ro'yxatdan o'tish</h1>
-    <form method="post" novalidate>
+    <form class="form-card" method="post" novalidate>
         {% csrf_token %}
         {% include '_form_fields.html' with form=form %}
         <button type="submit">Ro'yxatdan o'tish</button>

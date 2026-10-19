@@ -3,13 +3,15 @@
 {% block title %}{{ photo.title }}{% endblock %}
 
 {% block content %}
-<p><a href="{% url 'photostudio:photo_list' %}">&larr; Ro'yxatga qaytish</a></p>
+<a class="back-link" href="{% url 'photostudio:photo_list' %}">&larr; Ro'yxatga qaytish</a>
 
-<h1>{{ photo.title }}</h1>
-<dl>
-    <dt>ID</dt><dd>{{ photo.id }}</dd>
-    <dt>Fotograf</dt><dd>{{ photo.photographer }}</dd>
-    <dt>Kategoriya</dt><dd>{{ photo.category.name|default:"—" }}</dd>
-    <dt>Suratga olingan sana</dt><dd>{{ photo.date|date:"d.m.Y" }}</dd>
-</dl>
+<div class="panel">
+    <h1>{{ photo.title }}</h1>
+    <dl class="info">
+        <dt>ID</dt><dd>{{ photo.id }}</dd>
+        <dt>Fotograf</dt><dd>{{ photo.photographer }}</dd>
+        <dt>Kategoriya</dt><dd>{{ photo.category.name|default:"—" }}</dd>
+        <dt>Suratga olingan sana</dt><dd>{{ photo.date|date:"d.m.Y" }}</dd>
+    </dl>
+</div>
 {% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Men haqimda{% endblock %}
+
+{% block content %}
+<h1>Men haqimda</h1>
+
+<div class="about">
+    <div>
+        {# 10-hafta: shaxsiy surat — static/images/men.jpg #}
+        <img class="about-photo" src="{% static 'images/men.jpg' %}" alt="Muallifning surati">
+    </div>
+
+    <div>
+        <div class="panel">
+            <h2>Murodjon</h2>
+            <p>
+                Introduction to Django kursi talabasi. Variant: <strong>19 — fotostudiya (photostudio)</strong>.
+                Ushbu loyihada fotostudiya suratlari, mijozlari va fotosessiyalarini boshqarish tizimini yaratdim.
+            </p>
+            <p>O'qish joyi:</p>
+            {# 10-hafta: JDU logotipi — static/images/jdu_logo.png #}
+            <img class="jdu-logo" src="{% static 'images/jdu_logo.png' %}" alt="JDU logotipi">
+        </div>
+
+        <h2 style="margin-top: 24px;">Qisqa video</h2>
+        {# 10-hafta: video — static/video/intro.mp4 #}
+        <video controls muted preload="metadata">
+            <source src="{% static 'video/intro.mp4' %}" type="video/mp4">
+            Brauzeringiz video tegini qo'llab-quvvatlamaydi.
+        </video>
+    </div>
+</div>
+{% endblock %}

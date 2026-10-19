@@ -65,3 +65,8 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+
+def about(request):
+    """10-hafta: static fayllar — shaxsiy surat, video va JDU logotipi."""
+    return render(request, 'photostudio/about.html')

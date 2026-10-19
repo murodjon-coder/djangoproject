@@ -1,0 +1,446 @@
+/* =========================================================
+   Fotostudiya — asosiy uslublar (10-hafta: static fayllar)
+   ========================================================= */
+
+:root {
+    --ink: #1f1b16;
+    --ink-soft: #4a4238;
+    --muted: #7a6f62;
+    --paper: #f6f1ea;
+    --card: #ffffff;
+    --line: #e6ddd1;
+    --accent: #c97a2b;
+    --accent-dark: #a5611d;
+    --success-bg: #e7f4ea;
+    --success-ink: #1d6b35;
+    --error-bg: #fbeaea;
+    --error-ink: #a12828;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(31, 27, 22, .06), 0 4px 16px rgba(31, 27, 22, .06);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--ink);
+    background: var(--paper);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+a { color: var(--accent-dark); }
+a:hover { color: var(--accent); }
+
+h1, h2, h3 { line-height: 1.25; margin: 0 0 .6em; }
+h1 { font-size: 1.9rem; }
+h2 { font-size: 1.35rem; }
+
+.container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+main.container {
+    flex: 1;
+    padding-top: 28px;
+    padding-bottom: 48px;
+}
+
+/* ---------- Header ---------- */
+.site-header {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+.site-header .container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 24px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--paper);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.brand img { height: 34px; width: auto; border-radius: 6px; }
+.brand:hover { color: #fff; }
+
+.site-header nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    flex: 1;
+}
+
+.site-header nav a,
+.user-menu a,
+.link-button {
+    color: #e9dfd2;
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: .95rem;
+}
+
+.site-header nav a:hover,
+.user-menu a:hover,
+.link-button:hover { background: rgba(255, 255, 255, .1); color: #fff; }
+
+.site-header nav a.active { background: var(--accent); color: #fff; }
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .95rem;
+    color: #cfc3b4;
+}
+
+.inline-form { display: inline; margin: 0; }
+
+.link-button {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: .9rem;
+}
+
+.site-footer .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+}
+
+/* ---------- Xabarlar ---------- */
+.messages { list-style: none; padding: 0; margin: 0 0 20px; }
+
+.message {
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+    background: var(--card);
+    border: 1px solid var(--line);
+}
+
+.message-success { background: var(--success-bg); border-color: #bfe0c8; color: var(--success-ink); }
+.message-error { background: var(--error-bg); border-color: #f0c4c4; color: var(--error-ink); }
+
+.notice {
+    background: #fff6e8;
+    border: 1px solid #f1d9b5;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+}
+
+/* ---------- Sahifa sarlavhasi ---------- */
+.page-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.page-head h1 { margin: 0; }
+.page-head p { margin: 4px 0 0; color: var(--muted); }
+
+.badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: #f1e6d8;
+    color: var(--ink-soft);
+    font-size: .8rem;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+.badge-planned { background: #e8f0fb; color: #1e4f91; }
+.badge-done { background: var(--success-bg); color: var(--success-ink); }
+.badge-cancelled { background: var(--error-bg); color: var(--error-ink); }
+
+/* ---------- Tugmalar ---------- */
+button,
+.button {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+button:hover,
+.button:hover { background: var(--accent-dark); color: #fff; }
+
+.button-secondary {
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+}
+
+.button-secondary:hover { background: #efe7dc; color: var(--ink); }
+
+.button-danger { background: #b93838; }
+.button-danger:hover { background: #962a2a; }
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-top: 20px;
+}
+
+/* ---------- Jadval ---------- */
+.table-wrap {
+    overflow-x: auto;
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+table { width: 100%; border-collapse: collapse; }
+
+th, td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+}
+
+th { font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover { background: #fbf8f4; }
+
+/* ---------- Kartochkalar (suratlar galereyasi) ---------- */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+}
+
+.card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+a.card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(31, 27, 22, .12); color: inherit; }
+
+.card-image {
+    aspect-ratio: 4 / 3;
+    background: #e9e1d6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: .9rem;
+}
+
+.card-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.card-body { padding: 14px 16px 16px; }
+.card-body h3 { font-size: 1.05rem; margin-bottom: 4px; }
+.card-meta { color: var(--muted); font-size: .9rem; margin: 0; }
+
+.panel {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px;
+}
+
+/* ---------- Detail sahifa ---------- */
+.detail {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.detail-image {
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #e9e1d6;
+    box-shadow: var(--shadow);
+}
+
+.detail-image img { width: 100%; display: block; }
+.detail-image .placeholder { aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center; color: var(--muted); }
+
+dl.info { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 10px 16px; }
+dl.info dt { color: var(--muted); }
+dl.info dd { margin: 0; font-weight: 600; }
+
+.back-link { display: inline-block; margin-bottom: 14px; text-decoration: none; }
+
+/* ---------- Formalar ---------- */
+.form-card {
+    max-width: 620px;
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+}
+
+.auth-card { max-width: 440px; margin: 20px auto; }
+.auth-card .form-card { max-width: none; }
+
+.form-field { margin-bottom: 16px; }
+
+.form-field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.form-field input:not([type=checkbox]):not([type=file]),
+.form-field select,
+.form-field textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font: inherit;
+    background: #fffdfa;
+}
+
+.form-field input[type=file] { font: inherit; }
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+    outline: 2px solid rgba(201, 122, 43, .35);
+    border-color: var(--accent);
+}
+
+.form-field .help { display: block; color: var(--muted); font-size: .85rem; margin-top: 4px; }
+.form-field .help ul { margin: 4px 0 0; padding-left: 18px; }
+
+.has-error input,
+.has-error select,
+.has-error textarea { border-color: var(--error-ink) !important; background: #fff8f8 !important; }
+
+.field-error,
+.form-errors p {
+    color: var(--error-ink);
+    font-size: .9rem;
+    margin: 6px 0 0;
+}
+
+.form-errors {
+    background: var(--error-bg);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+}
+
+/* ---------- Bosh sahifa ---------- */
+.hero {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 18px;
+    padding: 40px 32px;
+    margin-bottom: 28px;
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 24px;
+    align-items: center;
+}
+
+.hero h1 { font-size: 2.3rem; }
+.hero p { color: #d8ccbd; font-size: 1.1rem; }
+.hero video { width: 100%; border-radius: 12px; display: block; }
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.stat {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px 18px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.stat strong { display: block; font-size: 1.8rem; }
+.stat span { color: var(--muted); }
+
+/* ---------- Men haqimda (10-hafta) ---------- */
+.about {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+}
+
+.about-photo {
+    width: 100%;
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    display: block;
+}
+
+.about video {
+    width: 100%;
+    max-width: 640px;
+    border-radius: 12px;
+    display: block;
+    background: #000;
+}
+
+.jdu-logo { height: 70px; width: auto; display: block; margin-top: 8px; }
+
+/* ---------- Telefon ekranlari ---------- */
+@media (max-width: 760px) {
+    h1 { font-size: 1.6rem; }
+    .detail,
+    .hero,
+    .about { grid-template-columns: 1fr; }
+    .hero { padding: 28px 20px; }
+    .about-photo { max-width: 240px; }
+    .user-menu { width: 100%; }
+}

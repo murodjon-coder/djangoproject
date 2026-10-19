@@ -5,10 +5,12 @@
 {% block content %}
 <h1>Yangi surat qo'shish</h1>
 
-<form method="post" novalidate>
+<form method="post" class="form-card" novalidate>
     {% csrf_token %}
     {% include '_form_fields.html' with form=form %}
-    <button type="submit">Saqlash</button>
-    <a href="{% url 'photostudio:photo_list' %}">Bekor qilish</a>
+    <div class="actions">
+        <button type="submit">Saqlash</button>
+        <a class="button button-secondary" href="{% url 'photostudio:photo_list' %}">Bekor qilish</a>
+    </div>
 </form>
 {% endblock %}
