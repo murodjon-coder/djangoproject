@@ -1,0 +1,25 @@
+{% comment %}Mijoz kabinetida: foydalanuvchining bron so'rovlari va ularning holati.{% endcomment %}
+<section class="section">
+    <div class="section-head">
+        <h2>Mening bron so'rovlarim</h2>
+        <a class="btn btn-sm" href="{% url 'photostudio:booking_create' %}">+ Yangi so'rov</a>
+    </div>
+    {% if bookings %}
+    <div class="rows">
+        {% for b in bookings %}
+        <div class="row row-session">
+            <div class="date-block"><strong>{{ b.preferred_at|date:"d" }}</strong><span>{{ b.preferred_at|date:"M" }}</span></div>
+            <div>
+                <div class="title">{{ b.category.name|default:"Fotosessiya" }} · {{ b.preferred_at|date:"H:i" }}</div>
+                <div class="sub">{% if b.answer %}Studiya: {{ b.answer }}{% else %}Yuborilgan: {{ b.created_at|date:"d.m.Y" }}{% endif %}</div>
+            </div>
+            <div class="sub hide-sm"></div>
+            <div class="sub hide-sm"></div>
+            <span class="badge badge-{{ b.status }}">{{ b.get_status_display }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty"><h3>Hali so'rov yubormagansiz</h3><p><a class="link" href="{% url 'photostudio:booking_create' %}">Fotosessiyaga yoziling</a> — holatini shu yerda kuzatasiz.</p></div>
+    {% endif %}
+</section>

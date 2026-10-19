@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Category, Client, Photo, Session, Tag
+from .models import BookingRequest, Category, Client, Photo, Session, Tag
 
 
 @admin.register(Category)
@@ -62,3 +62,12 @@ class PhotoAdmin(admin.ModelAdmin):
         if obj.image:
             return format_html('<img src="{}" style="height:48px;border-radius:6px;">', obj.image.url)
         return "—"
+
+
+@admin.register(BookingRequest)
+class BookingRequestAdmin(admin.ModelAdmin):
+    list_display = ('id', 'full_name', 'phone', 'category', 'preferred_at', 'status', 'created_at')
+    list_filter = ('status', 'category')
+    list_select_related = ('category',)
+    search_fields = ('full_name', 'phone', 'email')
+    readonly_fields = ('created_at',)

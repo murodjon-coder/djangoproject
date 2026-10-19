@@ -1,6 +1,6 @@
 # Qo'shimcha funksiyalar (kursdan tashqari)
 
-[`takliflar.md`](takliflar.md) dagi 1–4-takliflar bajarildi. Ish alohida `yangi-funksiyalar` branch'ida qilinib, `main` ga birlashtirildi.
+[`takliflar.md`](takliflar.md) dagi 1–6-takliflar bajarildi: 1–4 `yangi-funksiyalar` branch'ida, 5–6 va AI suratlar esa `bron-deploy-suratlar` branch'ida. Ikkalasi ham `main` ga birlashtirilgan.
 
 | # | Funksiya | Qaysi Django mavzusini ko'rsatadi |
 |---|---|---|
@@ -8,6 +8,9 @@
 | 2 | Teglar | **Many-to-Many** (`Photo.tags`), `prefetch_related`, formada `save()` ni qayta yozish |
 | 3 | Mijoz shaxsiy kabineti | **One-to-One** (`Client.user`), guruhlar va rollar, ruxsatlar (403), context processor |
 | 4 | Statistika paneli | ORM aggregatsiyasi: `Sum`, `Count`, `Avg`, `TruncMonth`, `Coalesce`, `filter=Q(...)` |
+| 5 | Onlayn bron so'rovi | yangi model va holatlar, `transaction.atomic`, bitta sahifada ikkita forma, context processor'dagi hisoblagich |
+| 6 | Internetga joylash (deploy) | `.env` sozlamalar, `DEBUG=False`, WhiteNoise, `collectstatic`, gunicorn, `check --deploy` |
+| 7 | AI bilan yaratilgan suratlar | `seed_demo` buyrug'idagi demo fayllar, `File` bilan `ImageField` ga saqlash |
 
 Shu bilan 7-hafta nazariyasidagi **uchala bog'lanish turi** ham loyihada amalda ishlatilgan:
 
@@ -104,13 +107,61 @@ Daromad faqat **bajarilgan** sessiyalardan hisoblanadi (test: `test_statistika_f
 
 ---
 
+## 5. Onlayn bron so'rovi
+
+- Model: [`BookingRequest`](../photostudio/models.py) — ism, telefon, email, fotosessiya turi, qulay vaqt, izoh, holat (Yangi / Tasdiqlangan / Rad etilgan), studiya javobi.
+  Tasdiqlanganda yaratilgan fotosessiya bilan **One-to-One** (`booking.session`).
+- **Mehmon yoki mijoz** `/book/` sahifasida so'rov yuboradi. Mijozning ismi va telefoni profilidan avtomatik to'ldiriladi. O'tib ketgan yoki 2 soatdan yaqin vaqtni tanlab bo'lmaydi.
+- **Xodim** menyudagi "Bronlar" yonida yangi so'rovlar sonini ko'radi (`context_processors.py`). `/bookings/` sahifasida so'rovlarni holat bo'yicha saralaydi.
+- So'rov sahifasida ikkita forma bor: **tasdiqlash** (fotograf, vaqt, narx, mijozga xabar) va **rad etish** (sabab).
+- Tasdiqlash (`approve_booking`, `transaction.atomic` ichida):
+  1. telefon raqam bo'yicha **mavjud mijozni topadi** (probellarga qaramay), topilmasa yangisini yaratadi;
+  2. so'rov akkauntdan yuborilgan bo'lsa, **mijoz kabinetini avtomatik bog'laydi**;
+  3. rejalashtirilgan **fotosessiya yaratadi** va so'rovni unga bog'laydi.
+- Mijoz kabinetida "Mening bron so'rovlarim" bo'limi bor: har bir so'rovning holati va studiya javobi.
+
+![Bron formasi](screenshots/qoshimcha_5_bron_formasi.png)
+![Menyuda yangi bronlar](screenshots/qoshimcha_5_menyuda_yangi_bronlar.png)
+![Bron so'rovlari](screenshots/qoshimcha_5_bron_royxati.png)
+![So'rovni ko'rib chiqish](screenshots/qoshimcha_5_bron_korib_chiqish.png)
+![Tasdiqlangan sessiya](screenshots/qoshimcha_5_tasdiqlangan_sessiya.png)
+![Kabinetda bron holati](screenshots/qoshimcha_5_kabinetda_bron_holati.png)
+
+## 6. Internetga joylash (deploy)
+
+To'liq qadamma-qadam qo'llanma: [**DEPLOY.md**](../DEPLOY.md) (PythonAnywhere — tavsiya etiladi, Render — avtomatik).
+
+- [`config/env.py`](../config/env.py) — `.env` faylni o'qiydi; `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` endi kodda emas.
+- `DEBUG=False` bo'lganda avtomatik yoqiladi: WhiteNoise (siqilgan, hash nomli static fayllar), HTTPS cookie'lar, HSTS, SMTP email.
+  Maxfiy kalit berilmasa, sayt umuman ishga tushmaydi (`ImproperlyConfigured`).
+- `render.yaml` va `build.sh` — Render'da bir tugma bilan deploy qilish uchun.
+- Kompyuterda server rejimi gunicorn bilan sinab ko'rildi: barcha sahifalar 200, CSS gzip bilan siqilib beriladi, media fayllar ochiladi —
+  [`terminal/deploy_sinov.txt`](terminal/deploy_sinov.txt).
+
+> ⚠️ Oxirgi qadam sizda qoladi: loyihani GitHub'ga push qilish va PythonAnywhere'da akkaunt ochish. Ularni faqat sizning akkauntlaringiz bilan qilish mumkin.
+
+## 7. AI bilan yaratilgan suratlar
+
+Galereyadagi siluetli namuna rasmlar o'rniga **Higgsfield Soul 2.0** modeli bilan 11 ta realistik foto yaratildi
+(to'y, nikoh uzuklari, oilaviy, kuzgi sayr, bolalar, portret, oq-qora portret, biznes, kadr ortida). Sayt bezagi uchun yana 3 ta rasm qo'shildi:
+studiya interyeri (bron sahifasi), "kadr ortida" (kirish sahifasi) va bog' (ro'yxatdan o'tish sahifasi).
+
+- Fayllar: [`photostudio/demo_photos/`](../photostudio/demo_photos/) (git'da, ~2 MB) — `seed_demo` ularni galereyaga joylaydi, shuning uchun serverda ham xuddi shu ko'rinish bo'ladi.
+- Sarflangan: **14 ta rasm, 1,68 Higgsfield krediti** (2 tasi qayta yaratildi: ochiq kiyimli variantlar dars uchun mos emas edi).
+- Suratlardagi odamlar haqiqiy emas.
+
+![Bosh sahifa](screenshots/qoshimcha_7_bosh_sahifa_ai_suratlar.png)
+![Galereya](screenshots/week14_suratlar_royxati.png)
+
+---
+
 ## Testlar
 
-[`tests/test_features.py`](../photostudio/tests/test_features.py) — 28 ta yangi test: qidiruv, filtrlar, sahifalash (FBV va CBV), teg slug'lari, formada yangi teglar, N+1 yo'qligi, mijoz izolyatsiyasi (o'z/begona surat), rollar bo'yicha 403, login'dan keyingi yo'naltirish, kabinet yaratish, statistika hisob-kitobi.
+[`tests/test_features.py`](../photostudio/tests/test_features.py) — 28 ta, [`tests/test_booking.py`](../photostudio/tests/test_booking.py) — 8 ta yangi test. `test_features.py`: qidiruv, filtrlar, sahifalash (FBV va CBV), teg slug'lari, formada yangi teglar, N+1 yo'qligi, mijoz izolyatsiyasi (o'z/begona surat), rollar bo'yicha 403, login'dan keyingi yo'naltirish, kabinet yaratish, statistika hisob-kitobi.
 
 ```
 $ pytest
-============================== 61 passed ==============================
+============================== 69 passed ==============================
 ```
 
 ## Darsda qanday ko'rsatish (3 daqiqa)
@@ -120,3 +171,4 @@ $ pytest
 3. **Mijozlar** → Bekzod Tursunov → **Kabinet yaratish** (yoki tayyor `aziza` akkauntidan foydalaning).
 4. Chiqing → `aziza` / `Mijoz2026` bilan kiring → avtomatik **kabinet** ochiladi; suratni yuklab oling.
 5. Manzilga `/photos/` yozing → 403: mijoz boshqalarning ma'lumotini ko'ra olmaydi.
+6. Chiqing → mehmon sifatida **Bron qilish** → so'rov yuboring → `admin` bilan kirib, **Bronlar** dagi yangi so'rovni tasdiqlang.

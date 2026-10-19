@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Bron so'rovi{% endblock %}
+
+{% block content %}
+<a class="back-link" href="{% url 'photostudio:booking_list' %}">← Bron so'rovlari</a>
+
+<div class="page-head">
+    <div class="profile">
+        <div class="date-block lg"><strong>{{ booking.preferred_at|date:"d" }}</strong><span>{{ booking.preferred_at|date:"M Y" }}</span></div>
+        <div>
+            <span class="badge badge-{{ booking.status }}">{{ booking.get_status_display }}</span>
+            <h1 style="margin-top: 10px;">{{ booking.full_name }}</h1>
+            <p>{{ booking.phone }}{% if booking.email %} · {{ booking.email }}{% endif %} · istagan vaqti {{ booking.preferred_at|date:"d.m.Y, H:i" }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="detail">
+    <div>
+        <div class="panel" style="margin-bottom: 20px;">
+            <dl class="meta" style="margin: 0;">
+                <div><dt>Fotosessiya turi</dt><dd>{{ booking.category.name|default:"Ko'rsatilmagan" }}</dd></div>
+                <div><dt>Izoh</dt><dd>{{ booking.message|default:"—"|linebreaksbr }}</dd></div>
+                <div><dt>Yuborilgan</dt><dd>{{ booking.created_at|date:"d.m.Y, H:i" }}</dd></div>
+                <div><dt>Akkaunt</dt><dd>{% if booking.user %}{{ booking.user.username }}{% else %}mehmon (akkauntsiz){% endif %}</dd></div>
+                <div>
+                    <dt>Mijozlar bazasida</dt>
+                    <dd>
+                        {% if existing_client %}
+                        <a class="link" href="{% url 'photostudio:client_detail' existing_client.pk %}">{{ existing_client.full_name }}</a> — shu telefon raqam bilan mavjud, sessiya unga qo'shiladi
+                        {% else %}
+                        yangi mijoz — tasdiqlanganda avtomatik yaratiladi
+                        {% endif %}
+                    </dd>
+                </div>
+                {% if booking.answer %}<div><dt>Studiya javobi</dt><dd>{{ booking.answer }}</dd></div>{% endif %}
+                {% if booking.session %}<div><dt>Fotosessiya</dt><dd><a class="link" href="{% url 'photostudio:session_detail' booking.session.pk %}">{{ booking.session }}</a></dd></div>{% endif %}
+            </dl>
+        </div>
+
+        {% if booking.status == 'new' %}
+        <form method="post" class="form-card">
+            {% csrf_token %}
+            <h2>Rad etish</h2>
+            {% include '_form_fields.html' with form=reject_form %}
+            <button type="submit" name="reject" class="btn-danger">Rad etish</button>
+        </form>
+        {% endif %}
+    </div>
+
+    {% if booking.status == 'new' %}
+    <form method="post" class="form-card">
+        {% csrf_token %}
+        <h2>Tasdiqlash</h2>
+        <p class="muted">Tasdiqlansa fotosessiya yaratiladi{% if booking.user %} va mijoz kabineti avtomatik bog'lanadi{% endif %}.</p>
+        {% include '_form_fields.html' with form=approve_form %}
+        <button type="submit" name="approve">Tasdiqlash va fotosessiya yaratish</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

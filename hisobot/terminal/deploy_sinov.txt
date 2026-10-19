@@ -1,0 +1,30 @@
+# Server rejimini kompyuterda sinash (DEBUG=False, gunicorn, WhiteNoise)
+$ export DJANGO_DEBUG=False DJANGO_SECRET_KEY=... DJANGO_SERVE_MEDIA=True DJANGO_SSL_REDIRECT=False
+$ python manage.py collectstatic --no-input --clear
+164 static files deleted, 164 static files copied to '.../photostudio/staticfiles', 462 post-processed.
+
+$ gunicorn config.wsgi:application --bind 127.0.0.1:8001 --workers 2
+$ curl ... (har bir sahifa javob kodi)
+/                      200
+/book/                 200
+/about/                200
+/accounts/login/       200
+/photos/               302    ← login talab qilinadi
+/nope/                 404    ← o'zimizning 404 sahifa ("Kadr topilmadi")
+/api/photostudio/      200
+
+css:   /static/css/style.72f632a19e64.css -> 200 text/css      ← hash nomli fayl (ManifestStaticFilesStorage)
+       Content-Encoding: gzip                                 ← WhiteNoise siqib beradi
+       Cache-Control: max-age=315360000, public, immutable     ← brauzer keshida uzoq saqlanadi
+media: /media/photos/2026/10/portret.jpg -> 200 image/jpeg
+
+# Xavfsizlik sarlavhalari
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+
+$ DJANGO_DEBUG=False DJANGO_SECRET_KEY=... python manage.py check --deploy
+WARNINGS:
+?: (security.W005) SECURE_HSTS_INCLUDE_SUBDOMAINS ...   ← *.pythonanywhere.com subdomenlarini biz boshqarmaymiz
+?: (security.W021) SECURE_HSTS_PRELOAD ...               ← faqat o'z domeningiz bo'lganda kerak
+System check identified 2 issues (0 silenced).          ← xato (ERROR) yo'q

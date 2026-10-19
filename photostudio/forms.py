@@ -1,7 +1,9 @@
+import datetime
+
 from django import forms
 from django.utils import timezone
 
-from .models import Client, Photo, Session, Tag
+from .models import BookingRequest, Client, Photo, Session, Tag
 
 
 class ImageInput(forms.ClearableFileInput):
@@ -102,3 +104,60 @@ class SessionForm(forms.ModelForm):
         if scheduled_at and status == Session.Status.PLANNED and scheduled_at < timezone.now():
             self.add_error('scheduled_at', "Rejalashtirilgan fotosessiya vaqti o'tib ketgan bo'lmasligi kerak.")
         return cleaned
+
+
+class BookingRequestForm(forms.ModelForm):
+    """Onlayn bron: mehmon yoki mijoz fotosessiyaga yoziladi."""
+
+    class Meta:
+        model = BookingRequest
+        fields = ['full_name', 'phone', 'email', 'category', 'preferred_at', 'message']
+        widgets = {
+            'phone': forms.TextInput(attrs={'placeholder': '+998 90 123 45 67'}),
+            'preferred_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
+            'message': forms.Textarea(attrs={'rows': 3, 'placeholder': "Masalan: 3 kishilik oila, oq fon, 1 soat"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['category'].empty_label = "— Farqi yo'q / bilmayman —"
+
+    def clean_preferred_at(self):
+        preferred_at = self.cleaned_data['preferred_at']
+        if preferred_at < timezone.now() + datetime.timedelta(hours=2):
+            raise forms.ValidationError("Kamida 2 soat keyingi vaqtni tanlang.")
+        if preferred_at > timezone.now() + datetime.timedelta(days=365):
+            raise forms.ValidationError("Bir yildan uzoq muddatga bron qilib bo'lmaydi.")
+        return preferred_at
+
+
+class BookingApproveForm(forms.Form):
+    """Xodim so'rovni tasdiqlaganda fotosessiya ma'lumotlarini kiritadi."""
+
+    photographer = forms.CharField(label="Fotograf", max_length=100)
+    scheduled_at = forms.DateTimeField(
+        label="Sana va vaqt",
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
+    )
+    duration_minutes = forms.IntegerField(label="Davomiyligi (daqiqa)", min_value=15, initial=60)
+    location = forms.CharField(label="Joy", max_length=150, initial="Asosiy studiya")
+    price = forms.DecimalField(label="Narxi (so'm)", min_value=0, max_digits=12, decimal_places=0)
+    answer = forms.CharField(
+        label="Mijozga xabar",
+        required=False,
+        widget=forms.Textarea(attrs={'rows': 2}),
+        initial="Fotosessiyangiz tasdiqlandi. Sizni kutamiz!",
+    )
+
+    def clean_scheduled_at(self):
+        scheduled_at = self.cleaned_data['scheduled_at']
+        if scheduled_at < timezone.now():
+            raise forms.ValidationError("O'tib ketgan vaqtga fotosessiya qo'yib bo'lmaydi.")
+        return scheduled_at
+
+
+class BookingRejectForm(forms.Form):
+    answer = forms.CharField(
+        label="Rad etish sababi",
+        widget=forms.Textarea(attrs={'rows': 2, 'placeholder': "Masalan: bu vaqt band, iltimos boshqa kunni tanlang"}),
+    )

@@ -18,6 +18,7 @@ bir joyda boshqarish, rasm yuklash, REST API va testlar.
 | `Tag` | `name`, `slug` | — |
 | `Client` (mijoz) | `full_name`, `phone`, `email`, `created_at`, `user` | `user` → **User** (One-to-One, shaxsiy kabinet) |
 | `Session` (fotosessiya) | `client`, `photographer`, `scheduled_at`, `duration_minutes`, `location`, `price`, `status`, `notes` | `client` → **Client** (ForeignKey, bitta mijozda ko'p sessiya) |
+| `BookingRequest` (bron so'rovi) | `full_name`, `phone`, `email`, `category`, `preferred_at`, `message`, `user`, `status`, `answer`, `session` | `session` ↔ **Session** (One-to-One, tasdiqlanganda) |
 | `Photo` (surat) | `title`, `photographer`, `date`, `category`, `image`, `session`, `tags` | `category` → **Category**, `session` → **Session** (ForeignKey), `tags` ↔ **Tag** (Many-to-Many) |
 
 ```
@@ -40,13 +41,15 @@ User 1 ──── 1 Client 1 ──── * Session 1 ──── * Photo * �
 | `/clients/...` | Mijozlar CRUD + `/clients/<id>/account/` — kabinet yaratish | xodim (o'chirish — admin) |
 | `/sessions/...` | Fotosessiyalar CRUD, holat bo'yicha saralash | xodim (o'chirish — admin) |
 | `/dashboard/` | Statistika paneli | xodim |
+| `/book/` | Fotosessiyaga onlayn yozilish | hamma |
+| `/bookings/`, `/bookings/<id>/` | Bron so'rovlari: ko'rib chiqish, tasdiqlash (mijoz + sessiya yaratiladi), rad etish | xodim |
 | `/accounts/register/`, `/accounts/login/`, `/accounts/logout/` | Ro'yxatdan o'tish, kirish, chiqish | hamma |
 | `/api/photostudio/`, `/api/photostudio/<id>/` | REST API (DRF) | o'qish — hamma, yozish — login qilganlar |
 | `/admin/` | Django admin panel | admin |
 
 ### Foydalanuvchi rollari
 
-1. **Mehmon** (login qilmagan) — bosh sahifa, "Men haqimda", API'ni o'qish; ro'yxatdan o'tishi mumkin.
+1. **Mehmon** (login qilmagan) — bosh sahifa, "Men haqimda", onlayn bron, API'ni o'qish; ro'yxatdan o'tishi mumkin.
 2. **Mijoz** (oddiy ro'yxatdan o'tgan foydalanuvchi) — faqat o'z kabineti: fotosessiyalari va suratlari, yuklab olish.
 3. **Xodim** (`Xodimlar` guruhi) — galereya, mijozlar, fotosessiyalar, statistika: ko'rish, qo'shish, tahrirlash.
 4. **Administrator** (`is_staff`) — xodim qila oladigan hamma narsa + o'chirish + admin panel.
@@ -77,6 +80,10 @@ python manage.py runserver
 
 Brauzerda: <http://127.0.0.1:8000/>
 
+### Internetga joylash
+
+`.env.example` → `.env`, keyin [**DEPLOY.md**](DEPLOY.md) dagi qadamlar (PythonAnywhere yoki Render).
+
 ## 3. Testlar
 
 ```bash
@@ -84,7 +91,7 @@ pytest
 ```
 
 `pytest.ini` loyiha ildizida joylashgan va `DJANGO_SETTINGS_MODULE = config.settings` ni ko'rsatadi.
-Testlar `photostudio/tests/` papkasida (61 ta): modellar, view'lar, formalar, API, middleware, rollar, qidiruv, teglar, kabinet va statistika.
+Testlar `photostudio/tests/` papkasida (69 ta): modellar, view'lar, formalar, API, middleware, rollar, qidiruv, teglar, kabinet, statistika va onlayn bron.
 
 ## 4. API (Django REST Framework)
 
@@ -111,6 +118,7 @@ photostudio/                  ← loyiha ildizi (manage.py shu yerda)
 │   ├── serializers.py        ← PhotoSerializer
 │   ├── api.py                ← PhotoViewSet
 │   ├── management/commands/seed_demo.py
+│   ├── demo_photos/          ← AI bilan yaratilgan demo suratlar (seed_demo ishlatadi)
 │   ├── migrations/
 │   ├── templates/photostudio/
 │   └── tests/
@@ -118,6 +126,9 @@ photostudio/                  ← loyiha ildizi (manage.py shu yerda)
 ├── static/                   ← css/, images/, video/
 ├── media/                    ← yuklangan rasmlar (git'ga kirmaydi)
 ├── hisobot/                  ← haftalik hisobotlar va skrinshotlar
+├── DEPLOY.md               ← internetga joylash qo'llanmasi
+├── .env.example            ← maxfiy sozlamalar namunasi (.env git'ga kirmaydi)
+├── render.yaml, build.sh   ← Render uchun
 ├── pytest.ini
 ├── requirements.txt
 └── .gitignore
