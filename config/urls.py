@@ -3,12 +3,21 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
+from rest_framework.routers import DefaultRouter
+
+from photostudio.api import PhotoViewSet
+
+# 12-hafta: router /api/photostudio/ va /api/photostudio/<id>/ manzillarini avtomatik yaratadi
+router = DefaultRouter()
+router.register('photostudio', PhotoViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # 8-hafta: Django'ning tayyor LoginView/LogoutView klasslari
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('api/', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls')),
     path('', include('photostudio.urls')),
 ]
 

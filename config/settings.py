@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 12-hafta: Django REST Framework
+    'rest_framework',
     # Mening ilovam (2-hafta)
     'photostudio',
 ]
@@ -140,6 +142,15 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'photostudio:photo_list'
 LOGOUT_REDIRECT_URL = 'login'
+
+
+# Django REST Framework (12-hafta)
+# Hamma o'qiy oladi (GET), lekin qo'shish/o'zgartirish/o'chirish faqat login qilganlarga
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+}
 
 
 # Email
