@@ -20,6 +20,8 @@ class PhotoForm(forms.ModelForm):
         # 11-hafta: yangi surat qo'shishda rasm majburiy, tahrirlashda esa eski rasm qolishi mumkin
         self.fields['image'].required = not self.instance.image
         self.fields['session'].queryset = Session.objects.select_related('client')
+        self.fields['category'].empty_label = "— Kategoriyani tanlang —"
+        self.fields['session'].empty_label = "— Fotosessiyasiz —"
 
     def clean_title(self):
         title = self.cleaned_data['title'].strip()
@@ -55,6 +57,10 @@ class SessionForm(forms.ModelForm):
             'scheduled_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
             'notes': forms.Textarea(attrs={'rows': 3}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['client'].empty_label = "— Mijozni tanlang —"
 
     def clean(self):
         cleaned = super().clean()

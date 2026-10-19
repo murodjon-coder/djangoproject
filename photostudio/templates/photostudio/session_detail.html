@@ -4,42 +4,55 @@
 {% block title %}Fotosessiya{% endblock %}
 
 {% block content %}
-<a class="back-link" href="{% url 'photostudio:session_list' %}">&larr; Fotosessiyalar</a>
+<a class="back-link" href="{% url 'photostudio:session_list' %}">← Fotosessiyalar</a>
 
-<div class="panel">
-    <h1>Fotosessiya <span class="badge badge-{{ photo_session.status }}">{{ photo_session.get_status_display }}</span></h1>
-    <dl class="info">
-        <dt>Mijoz</dt><dd><a href="{% url 'photostudio:client_detail' photo_session.client.pk %}">{{ photo_session.client.full_name }}</a> ({{ photo_session.client.phone }})</dd>
-        <dt>Sana va vaqt</dt><dd>{{ photo_session.scheduled_at|date:"d.m.Y H:i" }}</dd>
-        <dt>Davomiyligi</dt><dd>{{ photo_session.duration_minutes }} daqiqa</dd>
-        <dt>Fotograf</dt><dd>{{ photo_session.photographer }}</dd>
-        <dt>Joy</dt><dd>{{ photo_session.location }}</dd>
-        <dt>Narxi</dt><dd>{{ photo_session.price|intcomma }} so'm</dd>
-        {% if photo_session.notes %}<dt>Izoh</dt><dd>{{ photo_session.notes|linebreaksbr }}</dd>{% endif %}
-    </dl>
+<div class="page-head">
+    <div class="profile">
+        <div class="date-block lg"><strong>{{ photo_session.scheduled_at|date:"d" }}</strong><span>{{ photo_session.scheduled_at|date:"M Y" }}</span></div>
+        <div>
+            <span class="badge badge-{{ photo_session.status }}">{{ photo_session.get_status_display }}</span>
+            <h1 style="margin-top: 10px;">{{ photo_session.client.full_name }}</h1>
+            <p>{{ photo_session.scheduled_at|date:"H:i" }} · {{ photo_session.duration_minutes }} daqiqa · {{ photo_session.location }}</p>
+        </div>
+    </div>
     <div class="actions">
-        <a class="button" href="{% url 'photostudio:photo_create' %}?session={{ photo_session.pk }}">+ Surat qo'shish</a>
-        <a class="button button-secondary" href="{% url 'photostudio:session_update' photo_session.pk %}">Tahrirlash</a>
+        <a class="btn" href="{% url 'photostudio:photo_create' %}?session={{ photo_session.pk }}">+ Surat qo'shish</a>
+        <a class="btn btn-ghost" href="{% url 'photostudio:session_update' photo_session.pk %}">Tahrirlash</a>
         {% if user.is_staff %}
-        <a class="button button-danger" href="{% url 'photostudio:session_delete' photo_session.pk %}">O'chirish</a>
+        <a class="btn btn-ghost" href="{% url 'photostudio:session_delete' photo_session.pk %}">O'chirish</a>
         {% endif %}
     </div>
 </div>
 
-<h2 style="margin-top: 28px;">Shu fotosessiyadagi suratlar</h2>
-<div class="grid">
+<div class="kpis">
+    <div class="kpi"><strong>{{ photo_session.price|intcomma }}</strong><span>so'm</span></div>
+    <div class="kpi"><strong>{{ photo_session.photographer }}</strong><span>fotograf</span></div>
+    <div class="kpi">
+        <strong><a href="{% url 'photostudio:client_detail' photo_session.client.pk %}">{{ photo_session.client.phone }}</a></strong>
+        <span>mijoz telefoni</span>
+    </div>
+</div>
+
+{% if photo_session.notes %}
+<div class="panel" style="margin-bottom: 40px;">
+    <span class="eyebrow">Izoh</span>
+    <p style="margin: 0;">{{ photo_session.notes|linebreaksbr }}</p>
+</div>
+{% endif %}
+
+<div class="section-head"><h2>Shu fotosessiyadagi kadrlar</h2></div>
+<div class="gallery">
     {% for photo in photos %}
-    <a class="card" href="{% url 'photostudio:photo_detail' photo.id %}">
-        <div class="card-image">
-            {% if photo.image %}<img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="lazy">{% else %}Rasm yuklanmagan{% endif %}
-        </div>
-        <div class="card-body">
-            <h3>{{ photo.title }}</h3>
-            <p class="card-meta">{{ photo.category.name|default:"Kategoriyasiz" }}</p>
-        </div>
+    <a class="photo-card" href="{% url 'photostudio:photo_detail' photo.id %}">
+        {% if photo.image %}<img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="lazy">{% else %}<div class="no-image">Rasm yuklanmagan</div>{% endif %}
+        {% if photo.category %}<span class="chip">{{ photo.category.name }}</span>{% endif %}
+        <div class="caption"><h3>{{ photo.title }}</h3></div>
     </a>
     {% empty %}
-    <p>Hali surat qo'shilmagan.</p>
+    <div class="empty">
+        <h3>Hali surat qo'shilmagan</h3>
+        <p><a class="link" href="{% url 'photostudio:photo_create' %}?session={{ photo_session.pk }}">Birinchi kadrni yuklang</a></p>
+    </div>
     {% endfor %}
 </div>
 {% endblock %}

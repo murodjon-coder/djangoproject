@@ -3,39 +3,43 @@
 {% block title %}{{ photo.title }}{% endblock %}
 
 {% block content %}
-<a class="back-link" href="{% url 'photostudio:photo_list' %}">&larr; Ro'yxatga qaytish</a>
+<a class="back-link" href="{% url 'photostudio:photo_list' %}">← Galereyaga qaytish</a>
 
 <div class="detail">
-    <div class="detail-image">
+    <div class="detail-media">
         {% if photo.image %}
         {# 11-hafta: yuklangan rasm MEDIA_URL orqali ko'rsatiladi #}
         <img src="{{ photo.image.url }}" alt="{{ photo.title }}">
         {% else %}
-        <div class="placeholder">Rasm yuklanmagan</div>
+        <div class="no-image">Rasm yuklanmagan</div>
         {% endif %}
     </div>
 
-    <div class="panel">
-        <h1>{{ photo.title }}</h1>
-        <dl class="info">
-            <dt>ID</dt><dd>{{ photo.id }}</dd>
-            <dt>Fotograf</dt><dd>{{ photo.photographer }}</dd>
-            <dt>Kategoriya</dt><dd>{{ photo.category.name|default:"—" }}</dd>
-            <dt>Suratga olingan sana</dt><dd>{{ photo.date|date:"d.m.Y" }}</dd>
-            <dt>Fotosessiya</dt>
-            <dd>
-                {% if photo.session %}
-                <a href="{% url 'photostudio:session_detail' photo.session.pk %}">{{ photo.session }}</a>
-                {% else %}—{% endif %}
-            </dd>
-            {% if photo.image %}<dt>Fayl</dt><dd>{{ photo.image.name }}</dd>{% endif %}
+    <aside class="panel">
+        {% if photo.category %}<span class="badge badge-accent">{{ photo.category.name }}</span>{% endif %}
+        <h1 style="margin-top: 14px;">{{ photo.title }}</h1>
+
+        <dl class="meta">
+            <div><dt>Fotograf</dt><dd>{{ photo.photographer }}</dd></div>
+            <div><dt>Sana</dt><dd>{{ photo.date|date:"d E Y" }}</dd></div>
+            <div>
+                <dt>Fotosessiya</dt>
+                <dd>
+                    {% if photo.session %}
+                    <a class="link" href="{% url 'photostudio:session_detail' photo.session.pk %}">{{ photo.session }}</a>
+                    {% else %}—{% endif %}
+                </dd>
+            </div>
+            {% if photo.image %}<div><dt>Fayl</dt><dd class="muted">{{ photo.image.name }}</dd></div>{% endif %}
+            <div><dt>ID</dt><dd>#{{ photo.id }}</dd></div>
         </dl>
+
         <div class="actions">
-            <a class="button" href="{% url 'photostudio:photo_update' photo.id %}">Tahrirlash</a>
+            <a class="btn" href="{% url 'photostudio:photo_update' photo.id %}">Tahrirlash</a>
             {% if user.is_staff %}
-            <a class="button button-danger" href="{% url 'photostudio:photo_delete' photo.id %}">O'chirish</a>
+            <a class="btn btn-ghost" href="{% url 'photostudio:photo_delete' photo.id %}">O'chirish</a>
             {% endif %}
         </div>
-    </div>
+    </aside>
 </div>
 {% endblock %}

@@ -3,9 +3,10 @@
 {% block title %}Ruxsat yo'q{% endblock %}
 
 {% block content %}
-<div class="form-card">
-    <h1>403 — Ruxsat yo'q</h1>
+<div class="error-page">
+    <div class="code">403</div>
+    <h1>Ruxsat yo'q</h1>
     <p>Bu amalni faqat administrator bajara oladi.</p>
-    <a class="button" href="{% url 'photostudio:home' %}">Bosh sahifaga qaytish</a>
+    <a class="btn" href="{% url 'photostudio:home' %}">Bosh sahifaga qaytish</a>
 </div>
 {% endblock %}

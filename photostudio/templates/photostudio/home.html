@@ -1,46 +1,88 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static humanize %}
 
 {% block title %}Bosh sahifa{% endblock %}
 
 {% block content %}
 <section class="hero">
     <div>
-        <h1>Fotostudiya boshqaruv tizimi</h1>
-        <p>Suratlar, mijozlar va fotosessiyalarni bitta joyda boshqaring: kim, qachon, qayerda va qaysi suratlar olingan.</p>
+        <span class="eyebrow">Fotostudiya boshqaruv tizimi</span>
+        <h1>Har bir lahza —<br><em class="accent">bitta kadr.</em></h1>
+        <p class="lead">Suratlar, mijozlar va fotosessiyalar bitta joyda: kim, qachon, qayerda va qaysi kadrlar olingani doim qo'l ostida.</p>
         <div class="actions">
             {% if user.is_authenticated %}
-            <a class="button" href="{% url 'photostudio:session_create' %}">+ Fotosessiya rejalashtirish</a>
-            <a class="button button-secondary" style="color:#e9dfd2" href="{% url 'photostudio:photo_list' %}">Suratlar</a>
+            <a class="btn" href="{% url 'photostudio:session_create' %}">+ Fotosessiya rejalashtirish</a>
+            <a class="btn btn-ghost" href="{% url 'photostudio:photo_list' %}">Galereyani ochish</a>
             {% else %}
-            <a class="button" href="{% url 'login' %}">Kirish</a>
-            <a class="button button-secondary" style="color:#e9dfd2" href="{% url 'photostudio:register' %}">Ro'yxatdan o'tish</a>
+            <a class="btn" href="{% url 'login' %}">Tizimga kirish</a>
+            <a class="btn btn-ghost" href="{% url 'photostudio:register' %}">Ro'yxatdan o'tish</a>
             {% endif %}
         </div>
     </div>
-    <video autoplay muted loop playsinline>
-        <source src="{% static 'video/intro.mp4' %}" type="video/mp4">
-    </video>
+
+    <div class="mosaic">
+        {% for photo in latest_photos|slice:":2" %}
+        <a href="{% url 'photostudio:photo_detail' photo.id %}">
+            <img src="{{ photo.image.url }}" alt="{{ photo.title }}">
+            <span class="tag">{{ photo.category.name|default:photo.title }}</span>
+        </a>
+        {% endfor %}
+        <div>
+            {# 10-hafta: video — static/video/intro.mp4 #}
+            <video autoplay muted loop playsinline>
+                <source src="{% static 'video/intro.mp4' %}" type="video/mp4">
+            </video>
+        </div>
+    </div>
 </section>
 
 <div class="stats">
-    <a class="stat" href="{% url 'photostudio:photo_list' %}"><strong>{{ photo_count }}</strong><span>surat</span></a>
+    <a class="stat" href="{% url 'photostudio:photo_list' %}"><strong>{{ photo_count }}</strong><span>surat galereyada</span></a>
     <a class="stat" href="{% url 'photostudio:client_list' %}"><strong>{{ client_count }}</strong><span>mijoz</span></a>
     <a class="stat" href="{% url 'photostudio:session_list' %}?status=planned"><strong>{{ upcoming_count }}</strong><span>kelgusi fotosessiya</span></a>
 </div>
 
-<h2>So'nggi suratlar</h2>
-<div class="grid">
-    {% for photo in latest_photos %}
-    <a class="card" href="{% url 'photostudio:photo_detail' photo.id %}">
-        <div class="card-image"><img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="lazy"></div>
-        <div class="card-body">
-            <h3>{{ photo.title }}</h3>
-            <p class="card-meta">{{ photo.category.name|default:"Kategoriyasiz" }} &middot; {{ photo.date|date:"d.m.Y" }}</p>
-        </div>
-    </a>
-    {% empty %}
-    <p>Hozircha suratlar yo'q.</p>
-    {% endfor %}
-</div>
+{% if upcoming_sessions %}
+<section class="section">
+    <div class="section-head">
+        <h2>Kelgusi fotosessiyalar</h2>
+        <a class="link" href="{% url 'photostudio:session_list' %}?status=planned">Hammasini ko'rish →</a>
+    </div>
+    <div class="rows">
+        {% for s in upcoming_sessions %}
+        <a class="row row-session" href="{% url 'photostudio:session_detail' s.pk %}">
+            <div class="date-block"><strong>{{ s.scheduled_at|date:"d" }}</strong><span>{{ s.scheduled_at|date:"M" }}</span></div>
+            <div>
+                <div class="title">{{ s.client.full_name }}</div>
+                <div class="sub">{{ s.scheduled_at|date:"H:i" }} · {{ s.location }}</div>
+            </div>
+            <div class="sub hide-sm">{{ s.photographer }}</div>
+            <div class="num hide-sm">{{ s.price|intcomma }} so'm</div>
+            <span class="badge badge-{{ s.status }}">{{ s.get_status_display }}</span>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<section class="section">
+    <div class="section-head">
+        <h2>So'nggi kadrlar</h2>
+        <a class="link" href="{% url 'photostudio:photo_list' %}">Galereya →</a>
+    </div>
+    <div class="gallery">
+        {% for photo in latest_photos %}
+        <a class="photo-card" href="{% url 'photostudio:photo_detail' photo.id %}">
+            <img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="lazy">
+            {% if photo.category %}<span class="chip">{{ photo.category.name }}</span>{% endif %}
+            <div class="caption">
+                <h3>{{ photo.title }}</h3>
+                <p>{{ photo.date|date:"d.m.Y" }}</p>
+            </div>
+        </a>
+        {% empty %}
+        <div class="empty"><h3>Hali suratlar yo'q</h3><p>Birinchi kadrni qo'shing.</p></div>
+        {% endfor %}
+    </div>
+</section>
 {% endblock %}

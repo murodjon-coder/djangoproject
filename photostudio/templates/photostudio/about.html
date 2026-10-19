@@ -4,8 +4,6 @@
 {% block title %}Men haqimda{% endblock %}
 
 {% block content %}
-<h1>Men haqimda</h1>
-
 <div class="about">
     <div>
         {# 10-hafta: shaxsiy surat — static/images/men.jpg #}
@@ -13,23 +11,37 @@
     </div>
 
     <div>
-        <div class="panel">
-            <h2>Murodjon</h2>
-            <p>
-                Introduction to Django kursi talabasi. Variant: <strong>19 — fotostudiya (photostudio)</strong>.
-                Ushbu loyihada fotostudiya suratlari, mijozlari va fotosessiyalarini boshqarish tizimini yaratdim.
-            </p>
-            <p>O'qish joyi:</p>
-            {# 10-hafta: JDU logotipi — static/images/jdu_logo.png #}
-            <img class="jdu-logo" src="{% static 'images/jdu_logo.png' %}" alt="JDU logotipi">
+        <span class="eyebrow">Men haqimda</span>
+        <h1>Murodjon</h1>
+        <p class="muted" style="font-size: 1.1rem; max-width: 36em;">
+            Introduction to Django kursi talabasi. Ushbu loyihada fotostudiya suratlari, mijozlari va
+            fotosessiyalarini boshqarish tizimini yaratdim.
+        </p>
+
+        <div class="about-facts">
+            <span class="badge badge-accent">Variant 19 — photostudio</span>
+            <span class="badge plain">Django 6.1</span>
+            <span class="badge plain">Django REST Framework</span>
+            <span class="badge plain">pytest</span>
         </div>
 
-        <h2 style="margin-top: 24px;">Qisqa video</h2>
-        {# 10-hafta: video — static/video/intro.mp4 #}
-        <video controls muted preload="metadata">
-            <source src="{% static 'video/intro.mp4' %}" type="video/mp4">
-            Brauzeringiz video tegini qo'llab-quvvatlamaydi.
-        </video>
+        <div class="jdu-card">
+            {# 10-hafta: JDU logotipi — static/images/jdu_logo.png #}
+            <img class="jdu-logo" src="{% static 'images/jdu_logo.png' %}" alt="JDU logotipi">
+            <div>
+                <div style="font-weight: 600;">O'qish joyi</div>
+                <div class="muted">Japan Digital University</div>
+            </div>
+        </div>
+
+        <h2>Qisqa video</h2>
+        <div class="video-frame">
+            {# 10-hafta: video — static/video/intro.mp4 #}
+            <video controls muted preload="metadata">
+                <source src="{% static 'video/intro.mp4' %}" type="video/mp4">
+                Brauzeringiz video tegini qo'llab-quvvatlamaydi.
+            </video>
+        </div>
     </div>
 </div>
 {% endblock %}

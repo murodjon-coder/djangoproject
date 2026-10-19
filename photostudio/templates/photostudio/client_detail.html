@@ -4,43 +4,46 @@
 {% block title %}{{ client.full_name }}{% endblock %}
 
 {% block content %}
-<a class="back-link" href="{% url 'photostudio:client_list' %}">&larr; Mijozlar ro'yxati</a>
+<a class="back-link" href="{% url 'photostudio:client_list' %}">← Mijozlar</a>
 
-<div class="panel">
-    <h1>{{ client.full_name }}</h1>
-    <dl class="info">
-        <dt>Telefon</dt><dd>{{ client.phone }}</dd>
-        <dt>Email</dt><dd>{{ client.email|default:"—" }}</dd>
-        <dt>Qo'shilgan</dt><dd>{{ client.created_at|date:"d.m.Y H:i" }}</dd>
-    </dl>
+<div class="page-head">
+    <div class="profile">
+        <span class="avatar lg accent">{{ client.full_name|first }}</span>
+        <div>
+            <h1>{{ client.full_name }}</h1>
+            <p>{{ client.phone }}{% if client.email %} · {{ client.email }}{% endif %}</p>
+        </div>
+    </div>
     <div class="actions">
-        <a class="button" href="{% url 'photostudio:session_create' %}?client={{ client.pk }}">+ Fotosessiya</a>
-        <a class="button button-secondary" href="{% url 'photostudio:client_update' client.pk %}">Tahrirlash</a>
+        <a class="btn" href="{% url 'photostudio:session_create' %}?client={{ client.pk }}">+ Fotosessiya</a>
+        <a class="btn btn-ghost" href="{% url 'photostudio:client_update' client.pk %}">Tahrirlash</a>
         {% if user.is_staff %}
-        <a class="button button-danger" href="{% url 'photostudio:client_delete' client.pk %}">O'chirish</a>
+        <a class="btn btn-ghost" href="{% url 'photostudio:client_delete' client.pk %}">O'chirish</a>
         {% endif %}
     </div>
 </div>
 
-<h2 style="margin-top: 28px;">Fotosessiyalari</h2>
-<div class="table-wrap">
-    <table>
-        <thead>
-            <tr><th>Sana va vaqt</th><th>Fotograf</th><th>Narxi</th><th>Holati</th><th>Suratlar</th></tr>
-        </thead>
-        <tbody>
-            {% for s in sessions %}
-            <tr>
-                <td class="nowrap"><a href="{% url 'photostudio:session_detail' s.pk %}">{{ s.scheduled_at|date:"d.m.Y H:i" }}</a></td>
-                <td>{{ s.photographer }}</td>
-                <td class="nowrap">{{ s.price|intcomma }} so'm</td>
-                <td class="nowrap"><span class="badge badge-{{ s.status }}">{{ s.get_status_display }}</span></td>
-                <td>{{ s.photo_count }}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="5">Bu mijozda hali fotosessiya yo'q.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="kpis">
+    <div class="kpi"><strong>{{ sessions|length }}</strong><span>fotosessiya</span></div>
+    <div class="kpi"><strong>{{ photo_total }}</strong><span>surat</span></div>
+    <div class="kpi"><strong>{{ paid_total|intcomma }}</strong><span>so'm (bajarilgan sessiyalar)</span></div>
+</div>
+
+<div class="section-head"><h2>Fotosessiyalari</h2></div>
+<div class="rows">
+    {% for s in sessions %}
+    <a class="row row-session" href="{% url 'photostudio:session_detail' s.pk %}">
+        <div class="date-block"><strong>{{ s.scheduled_at|date:"d" }}</strong><span>{{ s.scheduled_at|date:"M" }}</span></div>
+        <div>
+            <div class="title">{{ s.scheduled_at|date:"d.m.Y, H:i" }}</div>
+            <div class="sub">{{ s.photographer }} · {{ s.photo_count }} ta surat</div>
+        </div>
+        <div class="sub hide-sm">{{ s.location }}</div>
+        <div class="num hide-sm">{{ s.price|intcomma }} so'm</div>
+        <span class="badge badge-{{ s.status }}">{{ s.get_status_display }}</span>
+    </a>
+    {% empty %}
+    <div class="empty"><h3>Hali fotosessiya yo'q</h3></div>
+    {% endfor %}
 </div>
 {% endblock %}
