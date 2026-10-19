@@ -77,6 +77,10 @@ path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
 | `admin` | `Studio2026!` | administrator (superuser) |
 | `murodjon` | `Fotostudiya2026` | oddiy foydalanuvchi (ro'yxatdan o'tish sahifasi orqali yaratilgan) |
 
+> **Eslatma:** login (username) katta-kichik harfga qaramaydi — `Murodjon`, `MURODJON` va `murodjon` bir xil ishlaydi
+> ([`photostudio/backends.py`](../photostudio/backends.py), `AUTHENTICATION_BACKENDS` — `config/settings.py`).
+> **Parol esa aniq yozilishi shart:** `Fotostudiya2026` (bosh harf katta F).
+
 ## Natija
 
 ![Redirect](screenshots/week08_himoyalangan_sahifa_redirect.png)
@@ -84,3 +88,4 @@ path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
 ![Ro'yxatdan o'tgandan keyin](screenshots/week08_royxatdan_otgandan_keyin.png)
 ![Logoutdan keyin](screenshots/week08_logout_keyin_login.png)
 ![Noto'g'ri parol](screenshots/week08_login_xato_parol.png)
+![Oddiy foydalanuvchi kirdi](screenshots/week08_login_muvaffaqiyatli_oddiy_user.png)

@@ -81,3 +81,18 @@ def test_royxatdan_otish(client, django_user_model):
     })
     assert response.status_code == 302
     assert django_user_model.objects.filter(username='yangi_user').exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('username', ['testuser', 'TestUser', 'TESTUSER', '  testuser '])
+def test_login_katta_kichik_harfga_qaramaydi(client, user, username):
+    response = client.post(reverse('login'), {'username': username, 'password': 'Parol-12345'})
+    assert response.status_code == 302
+    assert client.session.get('_auth_user_id') == str(user.pk)
+
+
+@pytest.mark.django_db
+def test_parol_katta_kichik_harfga_sezgir(client, user):
+    response = client.post(reverse('login'), {'username': 'testuser', 'password': 'parol-12345'})
+    assert response.status_code == 200
+    assert '_auth_user_id' not in client.session

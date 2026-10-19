@@ -140,6 +140,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Autentifikatsiya (8-hafta)
+# Login katta-kichik harfga sezgir bo'lmasligi uchun o'z backend'imiz
+AUTHENTICATION_BACKENDS = ['photostudio.backends.CaseInsensitiveModelBackend']
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'photostudio:home'
 LOGOUT_REDIRECT_URL = 'photostudio:home'
