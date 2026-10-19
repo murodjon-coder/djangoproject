@@ -30,6 +30,8 @@ class Photo(models.Model):
         related_name='photos',
         verbose_name="Kategoriya",
     )
+    # 11-hafta: rasm fayli media/photos/YYYY/MM/ papkasiga saqlanadi
+    image = models.ImageField("Rasm", upload_to='photos/%Y/%m/', blank=True)
 
     class Meta:
         verbose_name = "Surat"

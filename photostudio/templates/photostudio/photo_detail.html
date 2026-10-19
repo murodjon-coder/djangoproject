@@ -5,13 +5,25 @@
 {% block content %}
 <a class="back-link" href="{% url 'photostudio:photo_list' %}">&larr; Ro'yxatga qaytish</a>
 
-<div class="panel">
-    <h1>{{ photo.title }}</h1>
-    <dl class="info">
-        <dt>ID</dt><dd>{{ photo.id }}</dd>
-        <dt>Fotograf</dt><dd>{{ photo.photographer }}</dd>
-        <dt>Kategoriya</dt><dd>{{ photo.category.name|default:"—" }}</dd>
-        <dt>Suratga olingan sana</dt><dd>{{ photo.date|date:"d.m.Y" }}</dd>
-    </dl>
+<div class="detail">
+    <div class="detail-image">
+        {% if photo.image %}
+        {# 11-hafta: yuklangan rasm MEDIA_URL orqali ko'rsatiladi #}
+        <img src="{{ photo.image.url }}" alt="{{ photo.title }}">
+        {% else %}
+        <div class="placeholder">Rasm yuklanmagan</div>
+        {% endif %}
+    </div>
+
+    <div class="panel">
+        <h1>{{ photo.title }}</h1>
+        <dl class="info">
+            <dt>ID</dt><dd>{{ photo.id }}</dd>
+            <dt>Fotograf</dt><dd>{{ photo.photographer }}</dd>
+            <dt>Kategoriya</dt><dd>{{ photo.category.name|default:"—" }}</dd>
+            <dt>Suratga olingan sana</dt><dd>{{ photo.date|date:"d.m.Y" }}</dd>
+            {% if photo.image %}<dt>Fayl</dt><dd>{{ photo.image.name }}</dd>{% endif %}
+        </dl>
+    </div>
 </div>
 {% endblock %}

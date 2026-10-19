@@ -6,29 +6,29 @@
 <div class="page-head">
     <div>
         <h1>Suratlar ro'yxati</h1>
-        <p>Ushbu sahifa: <span class="badge">{{ view_type }}</span></p>
+        <p>Ushbu sahifa: <span class="badge">{{ view_type }}</span> &middot; jami {{ photos|length }} ta surat</p>
     </div>
     <a class="button" href="{% url 'photostudio:photo_create' %}">+ Surat qo'shish</a>
 </div>
 
-<div class="table-wrap">
-    <table>
-        <thead>
-            <tr><th>#</th><th>Nomi</th><th>Fotograf</th><th>Kategoriya</th><th>Sana</th></tr>
-        </thead>
-        <tbody>
-            {% for photo in photos %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td><a href="{% url 'photostudio:photo_detail' photo.id %}">{{ photo.title }}</a></td>
-                <td>{{ photo.photographer }}</td>
-                <td>{{ photo.category.name|default:"—" }}</td>
-                <td>{{ photo.date|date:"d.m.Y" }}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="5">Hozircha suratlar yo'q.</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="grid">
+    {% for photo in photos %}
+    <a class="card" href="{% url 'photostudio:photo_detail' photo.id %}">
+        <div class="card-image">
+            {% if photo.image %}
+            <img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="lazy">
+            {% else %}
+            Rasm yuklanmagan
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <h3>{{ photo.title }}</h3>
+            <p class="card-meta">{{ photo.photographer }} &middot; {{ photo.date|date:"d.m.Y" }}</p>
+            <p class="card-meta">{{ photo.category.name|default:"Kategoriyasiz" }}</p>
+        </div>
+    </a>
+    {% empty %}
+    <p>Hozircha suratlar yo'q.</p>
+    {% endfor %}
 </div>
 {% endblock %}

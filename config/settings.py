@@ -131,6 +131,10 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # collectstatic shu papkaga yig'adi (serverga joylashda kerak bo'ladi)
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Foydalanuvchi yuklagan fayllar (11-hafta)
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # Autentifikatsiya (8-hafta)
 LOGIN_URL = 'login'

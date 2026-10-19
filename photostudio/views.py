@@ -41,7 +41,8 @@ def photo_detail(request, id):
 def photo_create(request):
     """6-hafta: GET — bo'sh formani ko'rsatadi, POST — ma'lumotni tekshirib saqlaydi."""
     if request.method == 'POST':
-        form = PhotoForm(request.POST)
+        # 11-hafta: fayllar request.FILES orqali keladi
+        form = PhotoForm(request.POST, request.FILES)
         if form.is_valid():
             photo = form.save()
             messages.success(request, f"“{photo.title}” surati qo'shildi.")

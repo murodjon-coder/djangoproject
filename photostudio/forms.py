@@ -9,10 +9,16 @@ class PhotoForm(forms.ModelForm):
 
     class Meta:
         model = Photo
-        fields = ['title', 'photographer', 'date', 'category']
+        fields = ['title', 'photographer', 'date', 'category', 'image']
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}, format='%Y-%m-%d'),
+            'image': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # 11-hafta: yangi surat qo'shishda rasm majburiy, tahrirlashda esa eski rasm qolishi mumkin
+        self.fields['image'].required = not self.instance.image
 
     def clean_title(self):
         title = self.cleaned_data['title'].strip()
