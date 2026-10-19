@@ -119,6 +119,12 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 
+# Autentifikatsiya (8-hafta)
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'photostudio:photo_list'
+LOGOUT_REDIRECT_URL = 'login'
+
+
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
