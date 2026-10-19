@@ -1,6 +1,6 @@
 # 13-hafta — Django'da testlash
 
-**Holat:** ✅ bajarildi · **Commit:** `1b20588` (17 ta test), 14-haftada yana 11 ta qo'shildi → **jami 28 ta test, hammasi passed**
+**Holat:** ✅ bajarildi · **Commit:** `1b20588` (17 ta test), 14-haftada yana 11 ta qo'shildi → **jami 33 ta test, hammasi passed**
 
 ---
 
@@ -99,7 +99,7 @@ platform darwin -- Python 3.14.8, pytest-9.1.1, pluggy-1.7.0
 django: version: 6.1.2, settings: config.settings (from ini)
 configfile: pytest.ini
 plugins: django-4.14.0
-collected 28 items
+collected 33 items
 
 photostudio/tests/test_api.py::test_api_royxat PASSED
 photostudio/tests/test_api.py::test_api_bitta_obyekt PASSED
@@ -110,5 +110,5 @@ photostudio/tests/test_models.py::test_photo_str_metodi PASSED
 ...
 photostudio/tests/test_views.py::test_royxat_sahifasi_200 PASSED
 ...
-============================== 28 passed ==============================
+============================== 33 passed ==============================
 ```
