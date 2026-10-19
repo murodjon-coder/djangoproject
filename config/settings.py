@@ -188,10 +188,11 @@ LOGOUT_REDIRECT_URL = 'photostudio:home'
 
 
 # Django REST Framework (12-hafta)
-# Hamma o'qiy oladi (GET), lekin qo'shish/o'zgartirish/o'chirish faqat login qilganlarga
+# API faqat xodimlar uchun: suratlarda mijozlarning shaxsiy fotosessiyalari bor.
+# (12-haftada IsAuthenticatedOrReadOnly edi — hamma o'qiy olardi; mijoz kabineti qo'shilgach yopildi.)
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        'photostudio.permissions.IsEmployee',
     ],
 }
 

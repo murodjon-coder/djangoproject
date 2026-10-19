@@ -32,15 +32,35 @@ pip install djangorestframework
 
 [`config/settings.py:42`](../config/settings.py) → `INSTALLED_APPS` ga `'rest_framework'`.
 
-[`config/settings.py:150`](../config/settings.py) — ruxsatlar: o'qish hammaga, yozish faqat login qilganlarga:
+Ruxsatlar — 12-haftada `IsAuthenticatedOrReadOnly` edi: o'qish hammaga, yozish faqat login qilganlarga.
+
+> 🔒 **Keyinchalik o'zgartirildi.** Mijoz kabineti qo'shilgach ([qoshimcha.md](qoshimcha.md)), API orqali har kim
+> mijozlarning barcha suratlarini ko'ra olardi. Shuning uchun API **faqat xodimlarga** yopildi —
+> [`photostudio/permissions.py`](../photostudio/permissions.py):
 
 ```python
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        'photostudio.permissions.IsEmployee',
     ],
 }
 ```
+
+```python
+class IsEmployee(BasePermission):
+    message = "Bu API faqat fotostudiya xodimlari uchun."
+
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            raise NotAuthenticated("Bu API faqat fotostudiya xodimlari uchun. Avval xodim akkaunti bilan tizimga kiring.")
+        return is_employee(request.user)
+```
+
+| Kim | `/api/photostudio/` |
+|---|---|
+| mehmon | 403 — "Bu API faqat fotostudiya xodimlari uchun…" |
+| mijoz (`aziza`) | 403 |
+| xodim (`murodjon`), admin | 200 — ro'yxat, qo'shish, tahrirlash, o'chirish |
 
 ### 4-topshiriq — Serializer va ViewSet
 
@@ -82,9 +102,9 @@ urlpatterns = [
 | `GET /api/` | API ildizi (ro'yxat havolasi) |
 | `GET /api/photostudio/` | barcha suratlar (JSON) |
 | `GET /api/photostudio/1/` | bitta surat |
-| `POST /api/photostudio/` (login'siz) | `403 — Authentication credentials were not provided.` |
+| login'siz yoki mijoz sifatida | `403 — Bu API faqat fotostudiya xodimlari uchun.` |
 
-Terminal orqali sinov: [`terminal/week12_api_curl.txt`](terminal/week12_api_curl.txt)
+Terminal orqali sinov (12-haftadagi holat, API hali ochiq bo'lgan payt): [`terminal/week12_api_curl.txt`](terminal/week12_api_curl.txt)
 
 ```json
 {
@@ -104,9 +124,14 @@ API testlari: [`tests/test_api.py`](../photostudio/tests/test_api.py).
 
 ## Darsda qanday ko'rsatish
 
+0. Avval saytga **`admin`** (yoki `murodjon`) bilan kiring — API faqat xodimlar uchun. Menyuda **API** havolasi paydo bo'ladi.
 1. <http://127.0.0.1:8000/api/photostudio/> — DRF'ning brauzer interfeysida ro'yxat.
+   (`/api/` — faqat "kirish eshigi", manzillar ro'yxatini ko'rsatadi.)
 2. <http://127.0.0.1:8000/api/photostudio/1/> — bitta obyekt.
-3. (Ixtiyoriy) Sahifadagi "Log in" orqali kirib, pastdagi forma bilan POST qilib yangi surat qo'shish.
+3. (Ixtiyoriy) Sahifa pastidagi forma bilan POST qilib yangi surat qo'shish.
+4. Chiqib, yana `/api/photostudio/` ni oching → 403: begona odam ko'ra olmaydi.
+
+> 💡 Chrome sahifani avtomatik tarjima qilsa ("Api ildizi", "OLING"), manzil satridagi tarjima belgisidan **Show original** ni tanlang.
 4. `serializers.py`, `api.py` va `config/urls.py` dagi `router.register('photostudio', PhotoViewSet)` ni ko'rsating.
 
 ## Natija

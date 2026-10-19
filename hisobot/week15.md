@@ -20,7 +20,7 @@
 | Bonus | Holat | Qayerda |
 |---|---|---|
 | DRF API (ViewSet) | ✅ `/api/photostudio/` | [`week12.md`](week12.md) |
-| pytest bilan kamida 2 ta test | ✅ **69 ta test, hammasi passed** | [`week13.md`](week13.md) |
+| pytest bilan kamida 2 ta test | ✅ **74 ta test, hammasi passed** | [`week13.md`](week13.md) |
 | Static fayllar bilan bezatilgan sahifalar | ✅ to'liq CSS dizayn, telefonga moslashgan | [`week10.md`](week10.md) |
 
 ## 3. Taqdimotdan oldin qilinadigan ishlar ✔️
@@ -51,11 +51,11 @@
 3. Shu mijozga fotosessiya → sessiyaga rasm yuklab surat qo'shish.
 4. Suratni tahrirlash → o'chirish.
 5. "Chiqish" → `murodjon` bilan kirish → o'chirish tugmasi yo'q, `/photos/1/delete/` → 403.
-6. `/api/photostudio/` — API.
+6. `/api/photostudio/` — API (admin bilan kirgan holda; mehmonga 403).
 7. `/admin/` — barcha modellar.
 
 **4:30–5:30 — Testlar va Git.**
-Terminalda `pytest` → 69 passed. `git log --oneline --graph` → har hafta alohida commit, 14-hafta branch'i va merge. GitHub sahifasi.
+Terminalda `pytest` → 74 passed. `git log --oneline --graph` → har hafta alohida commit, 14-hafta branch'i va merge. GitHub sahifasi.
 
 **5:30–6:30 — Eng katta qiyinchilik** (pastga qarang).
 

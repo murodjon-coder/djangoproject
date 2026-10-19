@@ -29,15 +29,16 @@ Shuning uchun rollar aniq ajratildi — [`photostudio/roles.py`](../photostudio/
 
 | Rol | Kim | Nima ko'radi |
 |---|---|---|
-| Mehmon | login qilmagan | bosh sahifa, "Men haqimda", API (o'qish) |
+| Mehmon | login qilmagan | bosh sahifa, "Men haqimda", onlayn bron |
 | **Mijoz** | oddiy ro'yxatdan o'tgan foydalanuvchi | **faqat o'z kabineti**: o'z fotosessiyalari va suratlari, yuklab olish |
-| **Xodim** | `Xodimlar` guruhidagi foydalanuvchi | galereya, mijozlar, fotosessiyalar, statistika (qo'shish/tahrirlash) |
+| **Xodim** | `Xodimlar` guruhidagi foydalanuvchi | galereya, mijozlar, fotosessiyalar, bronlar, statistika, API (qo'shish/tahrirlash) |
 | Administrator | `is_staff` | xodim + o'chirish + admin panel |
 
 - `Xodimlar` guruhi **data migration** bilan yaratiladi: [`0006_xodimlar_guruhi.py`](../photostudio/migrations/0006_xodimlar_guruhi.py) (`RunPython`).
 - Xodim bo'lmagan foydalanuvchi xodim sahifasini ochsa — **403**; mehmon — login sahifasiga yo'naltiriladi.
 - [`context_processors.py`](../photostudio/context_processors.py) — har bir template'da `is_employee` va `client_profile` mavjud, shu bilan menyu rolga qarab o'zgaradi.
 - Login'dan keyin yo'naltirish (`after_login`): xodim → bosh sahifa, mijoz → kabinet.
+- REST API ham faqat xodimlarga ochiq ([`permissions.py`](../photostudio/permissions.py), `IsEmployee`) — aks holda API orqali mijozlarning suratlarini begona odam ko'ra olardi.
 
 **Akkauntlar:**
 
@@ -161,7 +162,7 @@ studiya interyeri (bron sahifasi), "kadr ortida" (kirish sahifasi) va bog' (ro'y
 
 ```
 $ pytest
-============================== 69 passed ==============================
+============================== 74 passed ==============================
 ```
 
 ## Darsda qanday ko'rsatish (3 daqiqa)

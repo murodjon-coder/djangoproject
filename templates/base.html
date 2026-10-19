@@ -36,7 +36,7 @@
                 <a href="{% url 'photostudio:booking_create' %}" {% if url_name == 'booking_create' %}class="active"{% endif %}>Bron qilish</a>
                 {% endif %}
                 <a href="{% url 'photostudio:about' %}" {% if url_name == 'about' %}class="active"{% endif %}>Men haqimda</a>
-                <a href="/api/">API</a>
+                {% if is_employee %}<a href="/api/">API</a>{% endif %}
             </nav>
             {% endwith %}
 

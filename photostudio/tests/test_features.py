@@ -109,9 +109,9 @@ def test_galereya_teglarni_prefetch_qiladi(logged_client, django_assert_max_num_
 
 
 @pytest.mark.django_db
-def test_api_teglarni_qaytaradi(client, photo):
+def test_api_teglarni_qaytaradi(logged_client, photo):
     photo.tags.add(Tag.objects.create(name='portret'))
-    assert client.get(f'/api/photostudio/{photo.id}/').json()['tags'] == ['portret']
+    assert logged_client.get(f'/api/photostudio/{photo.id}/').json()['tags'] == ['portret']
 
 
 # ---------------------------------------------------------------- 3. Mijoz kabineti (One-to-One)

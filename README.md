@@ -44,14 +44,14 @@ User 1 ──── 1 Client 1 ──── * Session 1 ──── * Photo * �
 | `/book/` | Fotosessiyaga onlayn yozilish | hamma |
 | `/bookings/`, `/bookings/<id>/` | Bron so'rovlari: ko'rib chiqish, tasdiqlash (mijoz + sessiya yaratiladi), rad etish | xodim |
 | `/accounts/register/`, `/accounts/login/`, `/accounts/logout/` | Ro'yxatdan o'tish, kirish, chiqish | hamma |
-| `/api/photostudio/`, `/api/photostudio/<id>/` | REST API (DRF) | o'qish — hamma, yozish — login qilganlar |
+| `/api/photostudio/`, `/api/photostudio/<id>/` | REST API (DRF) | xodim |
 | `/admin/` | Django admin panel | admin |
 
 ### Foydalanuvchi rollari
 
-1. **Mehmon** (login qilmagan) — bosh sahifa, "Men haqimda", onlayn bron, API'ni o'qish; ro'yxatdan o'tishi mumkin.
+1. **Mehmon** (login qilmagan) — bosh sahifa, "Men haqimda", onlayn bron; ro'yxatdan o'tishi mumkin.
 2. **Mijoz** (oddiy ro'yxatdan o'tgan foydalanuvchi) — faqat o'z kabineti: fotosessiyalari va suratlari, yuklab olish.
-3. **Xodim** (`Xodimlar` guruhi) — galereya, mijozlar, fotosessiyalar, statistika: ko'rish, qo'shish, tahrirlash.
+3. **Xodim** (`Xodimlar` guruhi) — galereya, mijozlar, fotosessiyalar, bronlar, statistika, API: ko'rish, qo'shish, tahrirlash.
 4. **Administrator** (`is_staff`) — xodim qila oladigan hamma narsa + o'chirish + admin panel.
 
 > 14-haftada 3 ta rol bor edi (mehmon, xodim, administrator). Mijoz kabineti qo'shilgach, mijoz va xodim rollari ajratildi —
@@ -91,13 +91,14 @@ pytest
 ```
 
 `pytest.ini` loyiha ildizida joylashgan va `DJANGO_SETTINGS_MODULE = config.settings` ni ko'rsatadi.
-Testlar `photostudio/tests/` papkasida (69 ta): modellar, view'lar, formalar, API, middleware, rollar, qidiruv, teglar, kabinet, statistika va onlayn bron.
+Testlar `photostudio/tests/` papkasida (74 ta): modellar, view'lar, formalar, API, middleware, rollar, qidiruv, teglar, kabinet, statistika va onlayn bron.
 
 ## 4. API (Django REST Framework)
 
 ```bash
-curl http://127.0.0.1:8000/api/photostudio/       # ro'yxat
-curl http://127.0.0.1:8000/api/photostudio/1/     # bitta surat
+# API faqat xodimlar uchun — brauzerda admin/xodim bilan kirib oching:
+http://127.0.0.1:8000/api/photostudio/       # ro'yxat
+http://127.0.0.1:8000/api/photostudio/1/     # bitta surat
 ```
 
 ## 5. Loyiha tuzilmasi
