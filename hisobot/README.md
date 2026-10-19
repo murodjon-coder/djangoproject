@@ -19,9 +19,11 @@ Har bir hisobotda: **nazariy javoblar** (2–3 gap), **amaliy qism** (qaysi fayl
 | [10](week10.md) | Static fayllar | CSS, surat, video, JDU logotipi | `250cb7c` |
 | [11](week11.md) | File Uploads | `ImageField`, `request.FILES`, MEDIA | `d0b5371` |
 | [12](week12.md) | DRF | `PhotoSerializer`, `PhotoViewSet`, `/api/photostudio/` | `1dcf208` |
-| [13](week13.md) | Testlash | pytest — **33 passed** | `1b20588` |
+| [13](week13.md) | Testlash | pytest — **61 passed** | `1b20588` |
 | [14](week14.md) | Kichik loyiha | Photo + Client + Session, to'liq CRUD, rollar, git branch | `9294fa8`, `ef328b2` |
 | [15](week15.md) | Yakuniy loyiha | talablar ro'yxati, taqdimot ssenariysi, savol-javoblar | — |
+
+📌 Kursdan keyin qo'shilgan funksiyalar (qidiruv, teglar, mijoz kabineti, statistika): [**qoshimcha.md**](qoshimcha.md)
 
 📌 Loyihani rivojlantirish g'oyalari: [**takliflar.md**](takliflar.md)
 
@@ -43,7 +45,8 @@ Brauzer: <http://127.0.0.1:8000/>
 | Login | Parol | Roli |
 |---|---|---|
 | `admin` | `Studio2026!` | administrator (admin panel, o'chirish) |
-| `murodjon` | `Fotostudiya2026` | oddiy foydalanuvchi |
+| `murodjon` | `Fotostudiya2026` | xodim (`Xodimlar` guruhi) — o'chira olmaydi |
+| `aziza` | `Mijoz2026` | mijoz — faqat o'z kabineti |
 
 Testlar: `pytest` · Demo ma'lumot: `python manage.py seed_demo`
 

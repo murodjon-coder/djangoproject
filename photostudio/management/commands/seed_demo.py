@@ -1,17 +1,19 @@
 """Namoyish uchun demo ma'lumotlar: python manage.py seed_demo
 
 Buyruqni bir necha marta ishga tushirsa ham, bir xil yozuvlar takrorlanmaydi.
+Demo mijoz kabineti: login "aziza", parol "Mijoz2026" (Aziza Rahimova).
 """
 import datetime
 import io
 import random
 
+from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from PIL import Image, ImageDraw, ImageFilter
 
-from photostudio.models import Category, Client, Photo, Session
+from photostudio.models import Category, Client, Photo, Session, Tag
 
 PALETTES = {
     "To'y": ((250, 214, 196), (196, 120, 128), (90, 52, 70)),
@@ -37,17 +39,29 @@ SESSIONS = [
     (3, "Murodjon", -5, 10, 500_000, Session.Status.CANCELLED, "Asosiy studiya"),
     (0, "Murodjon", 3, 14, 900_000, Session.Status.PLANNED, "Asosiy studiya"),
     (3, "Dilnoza Karimova", 9, 12, 1_200_000, Session.Status.PLANNED, "Tashqi joy: Amir Temur xiyoboni"),
+    # Statistika paneli uchun oldingi oylardagi fotosessiyalar
+    (1, "Dilnoza Karimova", -160, 11, 700_000, Session.Status.DONE, "Asosiy studiya"),
+    (2, "Murodjon", -135, 17, 1_800_000, Session.Status.DONE, "Chorvoq"),
+    (0, "Murodjon", -118, 10, 450_000, Session.Status.DONE, "Asosiy studiya"),
+    (3, "Dilnoza Karimova", -100, 15, 950_000, Session.Status.DONE, "Asosiy studiya"),
+    (1, "Murodjon", -88, 12, 550_000, Session.Status.CANCELLED, "Asosiy studiya"),
+    (0, "Dilnoza Karimova", -72, 16, 1_100_000, Session.Status.DONE, "Tashqi joy: Mustaqillik maydoni"),
+    (2, "Murodjon", -58, 14, 3_200_000, Session.Status.DONE, "To'yxona"),
+    (3, "Murodjon", -26, 11, 650_000, Session.Status.DONE, "Asosiy studiya"),
 ]
 
-# (nomi, fotograf, kategoriya, sessiya indeksi)
+# (nomi, fotograf, kategoriya, sessiya indeksi, teglar)
 PHOTOS = [
-    ("Kelin-kuyov portreti", "Murodjon", "To'y", 0),
-    ("Bog'dagi to'y lahzasi", "Murodjon", "Tabiat", 0),
-    ("Oilaviy fotosessiya", "Dilnoza Karimova", "Oilaviy", 1),
-    ("Bolalar fotosessiyasi", "Murodjon", "Bolalar", 1),
-    ("Studiyadagi portret", "Murodjon", "Portret", 2),
-    ("Biznes portret", "Murodjon", "Studiya", 2),
+    ("Kelin-kuyov portreti", "Murodjon", "To'y", 0, ["to'y", "tashqi", "kechqurun"]),
+    ("Bog'dagi to'y lahzasi", "Murodjon", "Tabiat", 0, ["to'y", "tashqi", "tabiiy yorug'lik"]),
+    ("Oilaviy fotosessiya", "Dilnoza Karimova", "Oilaviy", 1, ["oila", "studiya", "iliq ranglar"]),
+    ("Bolalar fotosessiyasi", "Murodjon", "Bolalar", 1, ["bolalar", "oila", "studiya"]),
+    ("Studiyadagi portret", "Murodjon", "Portret", 2, ["portret", "studiya", "past yorug'lik"]),
+    ("Biznes portret", "Murodjon", "Studiya", 2, ["portret", "oq fon", "biznes"]),
 ]
+
+DEMO_CLIENT_USERNAME = "aziza"
+DEMO_CLIENT_PASSWORD = "Mijoz2026"
 
 
 def make_image(palette, seed, size=(1200, 900)):
@@ -104,7 +118,7 @@ class Command(BaseCommand):
             )
             sessions.append(session)
 
-        for i, (title, photographer, category_name, session_idx) in enumerate(PHOTOS):
+        for i, (title, photographer, category_name, session_idx, tag_names) in enumerate(PHOTOS):
             session = sessions[session_idx]
             photo, created = Photo.objects.get_or_create(
                 title=title,
@@ -121,8 +135,22 @@ class Command(BaseCommand):
             if not photo.image:
                 photo.image.save(f"demo_{i + 1}.jpg", ContentFile(make_image(PALETTES[category_name], seed=i)), save=False)
             photo.save()
+            for name in tag_names:
+                tag = Tag.objects.filter(name__iexact=name).first() or Tag.objects.create(name=name)
+                photo.tags.add(tag)
+
+        # Demo mijoz kabineti (One-to-One: Client.user)
+        aziza = clients[0]
+        if aziza.user is None:
+            User = get_user_model()
+            user = User.objects.filter(username=DEMO_CLIENT_USERNAME).first()
+            if user is None:
+                user = User.objects.create_user(DEMO_CLIENT_USERNAME, password=DEMO_CLIENT_PASSWORD)
+            if not hasattr(user, 'client_profile'):
+                aziza.user = user
+                aziza.save(update_fields=['user'])
 
         self.stdout.write(self.style.SUCCESS(
             f"Tayyor: {Category.objects.count()} kategoriya, {Client.objects.count()} mijoz, "
-            f"{Session.objects.count()} fotosessiya, {Photo.objects.count()} surat."
+            f"{Session.objects.count()} fotosessiya, {Photo.objects.count()} surat, {Tag.objects.count()} teg."
         ))

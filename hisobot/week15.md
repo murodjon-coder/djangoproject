@@ -20,7 +20,7 @@
 | Bonus | Holat | Qayerda |
 |---|---|---|
 | DRF API (ViewSet) | ✅ `/api/photostudio/` | [`week12.md`](week12.md) |
-| pytest bilan kamida 2 ta test | ✅ **33 ta test, hammasi passed** | [`week13.md`](week13.md) |
+| pytest bilan kamida 2 ta test | ✅ **61 ta test, hammasi passed** | [`week13.md`](week13.md) |
 | Static fayllar bilan bezatilgan sahifalar | ✅ to'liq CSS dizayn, telefonga moslashgan | [`week10.md`](week10.md) |
 
 ## 3. Taqdimotdan oldin qilinadigan ishlar ✔️
@@ -55,7 +55,7 @@
 7. `/admin/` — barcha modellar.
 
 **4:30–5:30 — Testlar va Git.**
-Terminalda `pytest` → 33 passed. `git log --oneline --graph` → har hafta alohida commit, 14-hafta branch'i va merge. GitHub sahifasi.
+Terminalda `pytest` → 61 passed. `git log --oneline --graph` → har hafta alohida commit, 14-hafta branch'i va merge. GitHub sahifasi.
 
 **5:30–6:30 — Eng katta qiyinchilik** (pastga qarang).
 

@@ -1,13 +1,20 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Category, Client, Photo, Session
+from .models import Category, Client, Photo, Session, Tag
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
     search_fields = ('name',)
+
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'slug')
+    search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
 
 
 class SessionInline(admin.TabularInline):
@@ -18,8 +25,10 @@ class SessionInline(admin.TabularInline):
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('id', 'full_name', 'phone', 'email', 'created_at')
+    list_display = ('id', 'full_name', 'phone', 'email', 'user', 'created_at')
+    list_select_related = ('user',)
     search_fields = ('full_name', 'phone', 'email')
+    autocomplete_fields = ('user',)
     inlines = [SessionInline]
 
 
@@ -45,7 +54,8 @@ class PhotoAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'thumbnail', '__str__')
     list_select_related = ('category', 'session__client')
     search_fields = ('title', 'photographer')
-    list_filter = ('category', 'date')
+    list_filter = ('category', 'tags', 'date')
+    filter_horizontal = ('tags',)
 
     @admin.display(description="Rasm")
     def thumbnail(self, obj):

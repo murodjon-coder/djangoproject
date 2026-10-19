@@ -10,9 +10,11 @@
         <h1>Har bir lahza —<br><em class="accent">bitta kadr.</em></h1>
         <p class="lead">Suratlar, mijozlar va fotosessiyalar bitta joyda: kim, qachon, qayerda va qaysi kadrlar olingani doim qo'l ostida.</p>
         <div class="actions">
-            {% if user.is_authenticated %}
+            {% if is_employee %}
             <a class="btn" href="{% url 'photostudio:session_create' %}">+ Fotosessiya rejalashtirish</a>
-            <a class="btn btn-ghost" href="{% url 'photostudio:photo_list' %}">Galereyani ochish</a>
+            <a class="btn btn-ghost" href="{% url 'photostudio:dashboard' %}">Statistika</a>
+            {% elif user.is_authenticated %}
+            <a class="btn" href="{% url 'photostudio:cabinet' %}">Kabinetimga o'tish</a>
             {% else %}
             <a class="btn" href="{% url 'login' %}">Tizimga kirish</a>
             <a class="btn btn-ghost" href="{% url 'photostudio:register' %}">Ro'yxatdan o'tish</a>
@@ -22,7 +24,7 @@
 
     <div class="mosaic">
         {% for photo in latest_photos|slice:":2" %}
-        <a href="{% url 'photostudio:photo_detail' photo.id %}">
+        <a {% if is_employee %}href="{% url 'photostudio:photo_detail' photo.id %}"{% endif %}>
             <img src="{{ photo.image.url }}" alt="{{ photo.title }}">
             <span class="tag">{{ photo.category.name|default:photo.title }}</span>
         </a>
@@ -37,9 +39,9 @@
 </section>
 
 <div class="stats">
-    <a class="stat" href="{% url 'photostudio:photo_list' %}"><strong>{{ photo_count }}</strong><span>surat galereyada</span></a>
-    <a class="stat" href="{% url 'photostudio:client_list' %}"><strong>{{ client_count }}</strong><span>mijoz</span></a>
-    <a class="stat" href="{% url 'photostudio:session_list' %}?status=planned"><strong>{{ upcoming_count }}</strong><span>kelgusi fotosessiya</span></a>
+    <a class="stat" {% if is_employee %}href="{% url 'photostudio:photo_list' %}"{% endif %}><strong>{{ photo_count }}</strong><span>surat galereyada</span></a>
+    <a class="stat" {% if is_employee %}href="{% url 'photostudio:client_list' %}"{% endif %}><strong>{{ client_count }}</strong><span>mijoz</span></a>
+    <a class="stat" {% if is_employee %}href="{% url 'photostudio:session_list' %}?status=planned"{% endif %}><strong>{{ upcoming_count }}</strong><span>kelgusi fotosessiya</span></a>
 </div>
 
 {% if upcoming_sessions %}
@@ -68,11 +70,11 @@
 <section class="section">
     <div class="section-head">
         <h2>So'nggi kadrlar</h2>
-        <a class="link" href="{% url 'photostudio:photo_list' %}">Galereya →</a>
+        {% if is_employee %}<a class="link" href="{% url 'photostudio:photo_list' %}">Galereya →</a>{% endif %}
     </div>
     <div class="gallery">
         {% for photo in latest_photos %}
-        <a class="photo-card" href="{% url 'photostudio:photo_detail' photo.id %}">
+        <a class="photo-card" {% if is_employee %}href="{% url 'photostudio:photo_detail' photo.id %}"{% endif %}>
             <img src="{{ photo.image.url }}" alt="{{ photo.title }}" loading="lazy">
             {% if photo.category %}<span class="chip">{{ photo.category.name }}</span>{% endif %}
             <div class="caption">

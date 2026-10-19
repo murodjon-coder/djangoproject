@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Statistika{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <div>
+        <span class="eyebrow">Statistika paneli</span>
+        <h1>Fotostudiya raqamlarda</h1>
+        <p>Daromad faqat <strong>bajarilgan</strong> fotosessiyalar bo'yicha hisoblanadi.</p>
+    </div>
+</div>
+
+{# Asosiy ko'rsatkichlar — grafik emas, bitta katta raqam #}
+<div class="kpis kpis-4">
+    <div class="kpi"><strong>{{ revenue_total|intcomma }}</strong><span>jami daromad, so'm</span></div>
+    <div class="kpi"><strong>{{ revenue_this_month|intcomma }}</strong><span>shu oy · {{ sessions_this_month }} ta sessiya</span></div>
+    <div class="kpi"><strong>{{ average_price|intcomma }}</strong><span>o'rtacha sessiya narxi, so'm</span></div>
+    <div class="kpi"><strong>{{ cancel_rate }}%</strong><span>bekor qilingan sessiyalar</span></div>
+</div>
+
+<div class="dash-grid">
+    {# 1. Oylik daromad — ustunli grafik (bitta seriya, legend shart emas) #}
+    <section class="panel chart-panel span-2">
+        <div class="chart-head">
+            <h2>Oylik daromad</h2>
+            <p class="muted">Oxirgi 6 oy · {{ done_count }} ta bajarilgan sessiya</p>
+        </div>
+        <div class="columns" role="img" aria-label="Oxirgi 6 oydagi daromad ustunli grafigi">
+            {% for row in revenue_by_month %}
+            <div class="column" tabindex="0" data-tip="{{ row.month|date:'F Y' }}: {{ row.total|intcomma }} so'm · {{ row.sessions }} ta sessiya">
+                <span class="column-value">{{ row.short }}</span>
+                <div class="column-track">
+                    <div class="column-bar{% if row.is_current %} current{% endif %}" style="height: {{ row.pct }}%"></div>
+                </div>
+                <span class="column-label">{{ row.month|date:"M" }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        <details class="table-view">
+            <summary>Jadval ko'rinishi</summary>
+            <table>
+                <thead><tr><th>Oy</th><th class="num">Sessiyalar</th><th class="num">Daromad, so'm</th></tr></thead>
+                <tbody>
+                    {% for row in revenue_by_month %}
+                    <tr><td>{{ row.month|date:"F Y" }}</td><td class="num">{{ row.sessions }}</td><td class="num">{{ row.total|intcomma }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </details>
+    </section>
+
+    {# 2. Fotosessiya holatlari — status ranglari + yozuv (rang yolg'iz ishlatilmaydi) #}
+    <section class="panel chart-panel">
+        <div class="chart-head"><h2>Sessiya holatlari</h2></div>
+        <div class="hbars">
+            {% for row in statuses %}
+            <div class="hbar" tabindex="0" data-tip="{{ row.label }}: {{ row.count }} ta">
+                <span class="hbar-label"><span class="dot dot-{{ row.status }}"></span>{{ row.label }}</span>
+                <div class="hbar-track"><div class="hbar-fill fill-{{ row.status }}" style="width: {{ row.pct }}%"></div></div>
+                <span class="hbar-value">{{ row.count }}</span>
+            </div>
+            {% empty %}
+            <p class="muted">Ma'lumot yo'q.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    {# 3. Fotograflar reytingi — jadval + ichki ustun #}
+    <section class="panel chart-panel span-2">
+        <div class="chart-head"><h2>Fotograflar</h2><p class="muted">Daromad bo'yicha tartiblangan</p></div>
+        <div class="table-scroll">
+        <table class="data-table">
+            <thead>
+                <tr><th>Fotograf</th><th class="num">Sessiyalar</th><th class="num">Suratlar</th><th>Daromad, so'm</th></tr>
+            </thead>
+            <tbody>
+                {% for p in photographers %}
+                <tr>
+                    <td><span class="avatar" style="width:28px;height:28px;font-size:.8rem;margin-right:10px;vertical-align:middle;">{{ p.photographer|first }}</span>{{ p.photographer }}</td>
+                    <td class="num">{{ p.sessions }}</td>
+                    <td class="num">{{ p.photos }}</td>
+                    <td>
+                        <div class="inline-bar" tabindex="0" data-tip="{{ p.photographer }}: {{ p.revenue|intcomma }} so'm">
+                            <div class="hbar-track"><div class="hbar-fill" style="width: {{ p.pct }}%"></div></div>
+                            <span class="num">{{ p.revenue|intcomma }}</span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </section>
+
+    {# 4. Kategoriyalar bo'yicha suratlar #}
+    <section class="panel chart-panel">
+        <div class="chart-head"><h2>Kategoriyalar</h2><p class="muted">Suratlar soni</p></div>
+        <div class="hbars">
+            {% for row in categories %}
+            <div class="hbar" tabindex="0" data-tip="{{ row.name }}: {{ row.count }} ta surat">
+                <span class="hbar-label">{{ row.name }}</span>
+                <div class="hbar-track"><div class="hbar-fill" style="width: {{ row.pct }}%"></div></div>
+                <span class="hbar-value">{{ row.count }}</span>
+            </div>
+            {% empty %}
+            <p class="muted">Ma'lumot yo'q.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    {# 5. Eng yaxshi mijozlar #}
+    <section class="panel chart-panel span-2">
+        <div class="chart-head"><h2>Eng faol mijozlar</h2></div>
+        <div class="rows rows-flat">
+            {% for c in top_clients %}
+            <a class="row row-top" href="{% url 'photostudio:client_detail' c.pk %}">
+                <span class="rank">{{ forloop.counter }}</span>
+                <div><div class="title">{{ c.full_name }}</div><div class="sub">{{ c.session_count }} ta fotosessiya</div></div>
+                <div class="num">{{ c.revenue|intcomma }} so'm</div>
+            </a>
+            {% empty %}
+            <p class="muted">Hali bajarilgan sessiya yo'q.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    {# 6. Mashhur teglar #}
+    <section class="panel chart-panel">
+        <div class="chart-head"><h2>Mashhur teglar</h2></div>
+        <div class="tag-list">
+            {% for t in popular_tags %}
+            <a class="filter-chip tag" href="{% url 'photostudio:photo_list' %}?tag={{ t.slug }}"># {{ t.name }} <span>{{ t.count }}</span></a>
+            {% empty %}
+            <p class="muted">Hali teglar yo'q.</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,5 +1,7 @@
 # Loyihani rivojlantirish bo'yicha takliflar
 
+> ✅ **Bajarildi:** qidiruv + filtr + sahifalash, teglar (Many-to-Many), mijoz kabineti (One-to-One), statistika paneli — [qoshimcha.md](qoshimcha.md).
+
 Har bir taklifda: **nima qo'shiladi**, **foydasi**, **qaysi Django mavzusini mustahkamlaydi**, **qiyinligi** (⭐ — oson, ⭐⭐⭐ — qiyin) va taxminiy vaqt.
 Istalganini tanlang — men qo'shib beraman.
 

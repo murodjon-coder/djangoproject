@@ -3,7 +3,11 @@
 {% block title %}{{ photo.title }}{% endblock %}
 
 {% block content %}
+{% if is_employee %}
 <a class="back-link" href="{% url 'photostudio:photo_list' %}">← Galereyaga qaytish</a>
+{% else %}
+<a class="back-link" href="{% url 'photostudio:cabinet' %}">← Kabinetimga qaytish</a>
+{% endif %}
 
 <div class="detail">
     <div class="detail-media">
@@ -25,17 +29,35 @@
             <div>
                 <dt>Fotosessiya</dt>
                 <dd>
-                    {% if photo.session %}
+                    {% if photo.session and is_employee %}
                     <a class="link" href="{% url 'photostudio:session_detail' photo.session.pk %}">{{ photo.session }}</a>
+                    {% elif photo.session %}{{ photo.session.scheduled_at|date:"d.m.Y, H:i" }} · {{ photo.session.location }}
                     {% else %}—{% endif %}
                 </dd>
             </div>
+            {% if photo.tags.all %}
+            <div>
+                <dt>Teglar</dt>
+                <dd class="tag-list">
+                    {% for t in photo.tags.all %}
+                    {% if is_employee %}<a class="filter-chip tag" href="{% url 'photostudio:photo_list' %}?tag={{ t.slug }}"># {{ t.name }}</a>{% else %}<span class="filter-chip tag"># {{ t.name }}</span>{% endif %}
+                    {% endfor %}
+                </dd>
+            </div>
+            {% endif %}
+            {% if is_employee %}
             {% if photo.image %}<div><dt>Fayl</dt><dd class="muted">{{ photo.image.name }}</dd></div>{% endif %}
             <div><dt>ID</dt><dd>#{{ photo.id }}</dd></div>
+            {% endif %}
         </dl>
 
         <div class="actions">
+            {% if is_employee %}
             <a class="btn" href="{% url 'photostudio:photo_update' photo.id %}">Tahrirlash</a>
+            {% endif %}
+            {% if photo.image %}
+            <a class="btn {% if is_employee %}btn-ghost{% endif %}" href="{{ photo.image.url }}" download>Yuklab olish</a>
+            {% endif %}
             {% if user.is_staff %}
             <a class="btn btn-ghost" href="{% url 'photostudio:photo_delete' photo.id %}">O'chirish</a>
             {% endif %}

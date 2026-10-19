@@ -6,6 +6,7 @@
 <div class="form-shell">
     <a class="back-link" href="{{ cancel_url }}">← Orqaga</a>
     <h1>{{ page_title }}</h1>
+    {% if page_intro %}<p class="notice" style="margin-bottom: 16px;">{{ page_intro }}</p>{% endif %}
     <p class="muted" style="margin-bottom: 28px;"><span style="color: var(--accent)">*</span> belgili maydonlar to'ldirilishi shart.</p>
 
     {# 11-hafta: fayl yuborish uchun enctype="multipart/form-data" shart #}

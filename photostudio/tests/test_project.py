@@ -115,6 +115,8 @@ def test_seed_demo_buyrugi_takrorlanmaydi():
     call_command('seed_demo')
     call_command('seed_demo')
     assert Client.objects.count() == 4
-    assert Session.objects.count() == 6
+    assert Session.objects.count() == 14
     assert Photo.objects.count() == 6
     assert all(photo.image for photo in Photo.objects.all())
+    assert all(photo.tags.exists() for photo in Photo.objects.all())
+    assert Client.objects.get(full_name='Aziza Rahimova').user.username == 'aziza'

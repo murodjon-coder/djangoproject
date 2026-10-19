@@ -22,7 +22,7 @@
         </div>
         <div class="sub hide-sm">{{ client.email|default:"email yo'q" }}</div>
         <div class="sub hide-sm">Mijoz: {{ client.created_at|date:"d.m.Y" }} dan</div>
-        <span class="badge plain">{{ client.session_count }} ta sessiya</span>
+        <span class="badge {% if client.user %}badge-done{% else %}plain{% endif %}" title="{% if client.user %}Kabinet bor{% else %}Kabinet yo'q{% endif %}">{{ client.session_count }} ta sessiya</span>
     </a>
     {% empty %}
     <div class="empty"><h3>Hozircha mijozlar yo'q</h3></div>

@@ -1,38 +1,34 @@
-from functools import wraps
+import datetime
+from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count
+from django.core.paginator import Paginator
+from django.db.models import Avg, Count, DecimalField, Prefetch, Q, Sum, Value
+from django.db.models.functions import Coalesce, TruncMonth
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
 from .forms import ClientForm, PhotoForm, SessionForm
-from .models import Client, Photo, Session
+from .models import Category, Client, Photo, Session, Tag
+from .roles import (
+    EmployeeRequiredMixin,
+    StaffRequiredMixin,
+    employee_required,
+    get_client_profile,
+    is_employee,
+    staff_required,
+)
 
-
-def staff_required(view_func):
-    """O'chirish faqat administratorga (is_staff) ruxsat etiladi, boshqalarga 403."""
-
-    @wraps(view_func)
-    def wrapper(request, *args, **kwargs):
-        if not request.user.is_staff:
-            raise PermissionDenied
-        return view_func(request, *args, **kwargs)
-    return wrapper
-
-
-class StaffRequiredMixin(UserPassesTestMixin):
-    """O'chirish faqat administratorga (is_staff) ruxsat etiladi (14-hafta: foydalanuvchi rollari)."""
-
-    def test_func(self):
-        return self.request.user.is_staff
+PHOTOS_PER_PAGE = 12
+# Sum() bo'sh to'plamda None qaytaradi — Coalesce uni 0 ga almashtiradi
+ZERO = Value(Decimal('0'), output_field=DecimalField(max_digits=14, decimal_places=0))
 
 
 # ---------------------------------------------------------------- Bosh sahifa
@@ -46,8 +42,8 @@ def home(request):
         'client_count': Client.objects.count(),
         'upcoming_count': upcoming.count(),
     }
-    # Mijozlarning ismi va telefoni — maxfiy ma'lumot, faqat tizimga kirganlarga ko'rsatiladi
-    if request.user.is_authenticated:
+    # Mijozlarning ismi va telefoni — maxfiy ma'lumot, faqat xodimlarga ko'rsatiladi
+    if is_employee(request.user):
         context['upcoming_sessions'] = upcoming.select_related('client').order_by('scheduled_at')[:4]
     return render(request, 'photostudio/home.html', context)
 
@@ -57,36 +53,99 @@ def about(request):
     return render(request, 'photostudio/about.html')
 
 
+@login_required
+def after_login(request):
+    """Kirgandan keyin rolga qarab yo'naltirish: xodim — bosh sahifa, mijoz — shaxsiy kabinet."""
+    if is_employee(request.user):
+        return redirect('photostudio:home')
+    return redirect('photostudio:cabinet')
+
+
 # ---------------------------------------------------------------- Suratlar (Photo)
 
+def filter_photos(request, queryset):
+    """Galereya uchun qidiruv (?q=), kategoriya (?category=) va teg (?tag=) filtrlari."""
+    q = request.GET.get('q', '').strip()
+    if q:
+        queryset = queryset.filter(
+            Q(title__icontains=q)
+            | Q(photographer__icontains=q)
+            | Q(category__name__icontains=q)
+            | Q(tags__name__icontains=q)
+        ).distinct()
+    category = request.GET.get('category', '')
+    if category.isdigit():
+        queryset = queryset.filter(category_id=category)
+    tag = request.GET.get('tag', '')
+    if tag:
+        queryset = queryset.filter(tags__slug=tag)
+    return queryset
+
+
+def gallery_filters(request):
+    """Filtr paneli uchun kategoriyalar, teglar va joriy tanlov."""
+    return {
+        'categories': Category.objects.annotate(photo_count=Count('photos')).filter(photo_count__gt=0),
+        'tags': Tag.objects.annotate(photo_count=Count('photos')).filter(photo_count__gt=0),
+        'current_q': request.GET.get('q', '').strip(),
+        'current_category': request.GET.get('category', ''),
+        'current_tag': request.GET.get('tag', ''),
+    }
+
+
+def gallery_queryset():
+    # 7-hafta: select_related — ForeignKey (kategoriya) JOIN bilan bitta so'rovda;
+    # prefetch_related — Many-to-Many (teglar) bitta qo'shimcha so'rovda
+    return Photo.objects.select_related('category').prefetch_related('tags')
+
+
 @login_required
+@employee_required
 def photo_list(request):
-    """4-hafta: function-based view — barcha suratlar ro'yxati."""
-    # 7-hafta: select_related — kategoriya nomini JOIN orqali bitta so'rovda olamiz
-    photos = Photo.objects.select_related('category')
+    """4-hafta: function-based view — barcha suratlar ro'yxati (+ qidiruv, filtr, sahifalash)."""
+    photos = filter_photos(request, gallery_queryset())
+    page_obj = Paginator(photos, PHOTOS_PER_PAGE).get_page(request.GET.get('page'))
     return render(request, 'photostudio/photo_list.html', {
-        'photos': photos,
+        'photos': page_obj,
+        'page_obj': page_obj,
         'view_type': 'Function-based view',
+        **gallery_filters(request),
     })
 
 
-class PhotoListView(LoginRequiredMixin, ListView):
+class PhotoListView(EmployeeRequiredMixin, ListView):
     """4-hafta: xuddi shu ro'yxat, lekin class-based view (ListView) bilan."""
 
-    queryset = Photo.objects.select_related('category')
     template_name = 'photostudio/photo_list.html'
     context_object_name = 'photos'
+    paginate_by = PHOTOS_PER_PAGE
     extra_context = {'view_type': 'Class-based view (ListView)'}
+
+    def get_queryset(self):
+        return filter_photos(self.request, gallery_queryset())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(gallery_filters(self.request))
+        return context
 
 
 @login_required
 def photo_detail(request, id):
     """5-hafta: bitta suratni ko'rsatuvchi view (dinamik URL: photos/<int:id>/)."""
-    photo = get_object_or_404(Photo.objects.select_related('category', 'session__client'), id=id)
+    photo = get_object_or_404(
+        Photo.objects.select_related('category', 'session__client').prefetch_related('tags'), id=id,
+    )
+    if not is_employee(request.user):
+        # Mijoz faqat o'z fotosessiyasidagi suratni ko'ra oladi
+        profile = get_client_profile(request.user)
+        if not (profile and photo.session and photo.session.client_id == profile.pk):
+            raise PermissionDenied
     return render(request, 'photostudio/photo_detail.html', {'photo': photo})
 
 
 @login_required
+@employee_required
 def photo_create(request):
     """6-hafta: GET — bo'sh formani ko'rsatadi, POST — ma'lumotni tekshirib saqlaydi."""
     if request.method == 'POST':
@@ -106,6 +165,7 @@ def photo_create(request):
 
 
 @login_required
+@employee_required
 def photo_update(request, id):
     """14-hafta: mavjud suratni tahrirlash (CRUD — Update)."""
     photo = get_object_or_404(Photo, id=id)
@@ -142,13 +202,13 @@ def photo_delete(request, id):
 
 # ---------------------------------------------------------------- Mijozlar (Client)
 
-class ClientListView(LoginRequiredMixin, ListView):
-    queryset = Client.objects.annotate(session_count=Count('sessions'))
+class ClientListView(EmployeeRequiredMixin, ListView):
+    queryset = Client.objects.select_related('user').annotate(session_count=Count('sessions'))
     context_object_name = 'clients'
 
 
-class ClientDetailView(LoginRequiredMixin, DetailView):
-    model = Client
+class ClientDetailView(EmployeeRequiredMixin, DetailView):
+    queryset = Client.objects.select_related('user')
     context_object_name = 'client'
 
     def get_context_data(self, **kwargs):
@@ -160,7 +220,7 @@ class ClientDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class ClientCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class ClientCreateView(EmployeeRequiredMixin, SuccessMessageMixin, CreateView):
     model = Client
     form_class = ClientForm
     template_name = 'photostudio/form.html'
@@ -168,7 +228,7 @@ class ClientCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     extra_context = {'page_title': "Yangi mijoz", 'cancel_url': reverse_lazy('photostudio:client_list')}
 
 
-class ClientUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class ClientUpdateView(EmployeeRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Client
     form_class = ClientForm
     template_name = 'photostudio/form.html'
@@ -181,7 +241,7 @@ class ClientUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return context
 
 
-class ClientDeleteView(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+class ClientDeleteView(StaffRequiredMixin, DeleteView):
     model = Client
     template_name = 'photostudio/confirm_delete.html'
     success_url = reverse_lazy('photostudio:client_list')
@@ -197,9 +257,37 @@ class ClientDeleteView(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
         return super().form_valid(form)
 
 
+@login_required
+@employee_required
+def client_account_create(request, pk):
+    """Mijoz uchun shaxsiy kabinet akkaunti yaratish (One-to-One: Client.user)."""
+    client = get_object_or_404(Client, pk=pk)
+    if client.user:
+        messages.info(request, f"Bu mijozning kabineti allaqachon bor: {client.user.username}.")
+        return redirect(client)
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            client.user = form.save()
+            client.save(update_fields=['user'])
+            messages.success(
+                request,
+                f"Kabinet yaratildi. Login: {client.user.username} — login va parolni mijozga bering.",
+            )
+            return redirect(client)
+    else:
+        form = UserCreationForm()
+    return render(request, 'photostudio/form.html', {
+        'form': form,
+        'page_title': f"Kabinet yaratish: {client.full_name}",
+        'page_intro': "Mijoz shu login va parol bilan kirib, faqat o'z fotosessiyalari va suratlarini ko'radi.",
+        'cancel_url': client.get_absolute_url(),
+    })
+
+
 # ---------------------------------------------------------------- Fotosessiyalar (Session)
 
-class SessionListView(LoginRequiredMixin, ListView):
+class SessionListView(EmployeeRequiredMixin, ListView):
     context_object_name = 'photo_sessions'
     template_name = 'photostudio/session_list.html'
 
@@ -217,7 +305,7 @@ class SessionListView(LoginRequiredMixin, ListView):
         return context
 
 
-class SessionDetailView(LoginRequiredMixin, DetailView):
+class SessionDetailView(EmployeeRequiredMixin, DetailView):
     queryset = Session.objects.select_related('client')
     context_object_name = 'photo_session'
     template_name = 'photostudio/session_detail.html'
@@ -228,7 +316,7 @@ class SessionDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-class SessionCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class SessionCreateView(EmployeeRequiredMixin, SuccessMessageMixin, CreateView):
     model = Session
     form_class = SessionForm
     template_name = 'photostudio/form.html'
@@ -239,7 +327,7 @@ class SessionCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return {'client': self.request.GET.get('client')}
 
 
-class SessionUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class SessionUpdateView(EmployeeRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Session
     form_class = SessionForm
     template_name = 'photostudio/form.html'
@@ -252,7 +340,7 @@ class SessionUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return context
 
 
-class SessionDeleteView(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+class SessionDeleteView(StaffRequiredMixin, DeleteView):
     model = Session
     template_name = 'photostudio/confirm_delete.html'
     success_url = reverse_lazy('photostudio:session_list')
@@ -268,19 +356,152 @@ class SessionDeleteView(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
         return super().form_valid(form)
 
 
+# ---------------------------------------------------------------- Mijoz kabineti
+
+@login_required
+def cabinet(request):
+    """Mijozning shaxsiy kabineti: faqat o'z fotosessiyalari va suratlari."""
+    client = get_client_profile(request.user)
+    context = {'client': client}
+    if client:
+        photos_qs = Photo.objects.select_related('category').prefetch_related('tags')
+        sessions = list(
+            client.sessions.prefetch_related(Prefetch('photos', queryset=photos_qs)).order_by('-scheduled_at')
+        )
+        now = timezone.now()
+        context.update({
+            'sessions': sessions,
+            'upcoming': sorted(
+                (s for s in sessions if s.status == Session.Status.PLANNED and s.scheduled_at >= now),
+                key=lambda s: s.scheduled_at,
+            ),
+            'photo_count': sum(len(s.photos.all()) for s in sessions),
+            'done_count': sum(1 for s in sessions if s.status == Session.Status.DONE),
+        })
+    return render(request, 'photostudio/cabinet.html', context)
+
+
+# ---------------------------------------------------------------- Statistika (dashboard)
+
+def last_months(count, today):
+    """Joriy oy bilan birga oxirgi `count` oyning birinchi kunlari (eskisidan yangisiga)."""
+    year, month = today.year, today.month
+    months = []
+    for _ in range(count):
+        months.append(datetime.date(year, month, 1))
+        month -= 1
+        if month == 0:
+            year, month = year - 1, 12
+    return list(reversed(months))
+
+
+def money_short(value):
+    """Grafik yozuvlari uchun qisqa summa: 2 500 000 → "2,5 mln", 800 000 → "800 ming"."""
+    value = int(value or 0)
+    if value >= 1_000_000:
+        return f"{value / 1_000_000:.1f}".rstrip('0').rstrip('.').replace('.', ',') + " mln"
+    if value >= 1_000:
+        return f"{round(value / 1_000)} ming"
+    return str(value)
+
+
+def with_percent(rows, key):
+    """Har bir qatorga eng katta qiymatga nisbatan foiz (`pct`) qo'shadi — gorizontal ustunlar uchun."""
+    top = max((row[key] or 0 for row in rows), default=0)
+    for row in rows:
+        row['pct'] = round((row[key] or 0) * 100 / top) if top else 0
+    return rows
+
+
+@login_required
+@employee_required
+def dashboard(request):
+    """Statistika paneli: daromad, fotograflar, kategoriyalar, holatlar (ORM aggregatsiyasi)."""
+    done = Session.objects.filter(status=Session.Status.DONE)
+    today = timezone.localdate()
+    months = last_months(6, today)
+
+    # Oylik daromad: TruncMonth + Sum — bitta GROUP BY so'rov
+    monthly = (
+        done.filter(scheduled_at__date__gte=months[0])
+        .annotate(month=TruncMonth('scheduled_at'))
+        .values('month')
+        .annotate(total=Sum('price'), sessions=Count('id'))
+    )
+    by_month = {(row['month'].year, row['month'].month): row for row in monthly}
+    revenue_by_month = with_percent([
+        {
+            'month': m,
+            'total': by_month.get((m.year, m.month), {}).get('total') or 0,
+            'sessions': by_month.get((m.year, m.month), {}).get('sessions') or 0,
+            'is_current': (m.year, m.month) == (today.year, today.month),
+        }
+        for m in months
+    ], 'total')
+    for row in revenue_by_month:
+        row['short'] = money_short(row['total'])
+
+    totals = done.aggregate(revenue=Coalesce(Sum('price'), ZERO), average=Avg('price'), count=Count('id'))
+    all_sessions = Session.objects.count()
+    cancelled = Session.objects.filter(status=Session.Status.CANCELLED).count()
+    this_month = by_month.get((today.year, today.month), {})
+
+    # Fotograflar reytingi: sessiyalar va suratlar alohida guruhlanadi (JOIN qiymatlarni ko'paytirib yubormasligi uchun)
+    photo_counts = dict(Photo.objects.values_list('photographer').annotate(n=Count('id')))
+    photographers = with_percent([
+        {**row, 'photos': photo_counts.get(row['photographer'], 0)}
+        for row in Session.objects.values('photographer').annotate(
+            sessions=Count('id'),
+            revenue=Coalesce(Sum('price', filter=Q(status=Session.Status.DONE)), ZERO),
+        ).order_by('-revenue', 'photographer')
+    ], 'revenue')
+
+    categories = with_percent(list(
+        Category.objects.annotate(count=Count('photos')).filter(count__gt=0).order_by('-count').values('name', 'count')
+    ), 'count')
+
+    status_labels = dict(Session.Status.choices)
+    statuses = with_percent([
+        {'status': row['status'], 'label': status_labels[row['status']], 'count': row['count']}
+        for row in Session.objects.values('status').annotate(count=Count('id')).order_by('-count')
+    ], 'count')
+
+    top_clients = (
+        Client.objects.annotate(
+            revenue=Coalesce(Sum('sessions__price', filter=Q(sessions__status=Session.Status.DONE)), ZERO),
+            session_count=Count('sessions'),
+        ).filter(revenue__gt=0).order_by('-revenue')[:5]
+    )
+
+    return render(request, 'photostudio/dashboard.html', {
+        'revenue_by_month': revenue_by_month,
+        'revenue_total': totals['revenue'],
+        'revenue_this_month': this_month.get('total') or 0,
+        'sessions_this_month': this_month.get('sessions') or 0,
+        'average_price': round(totals['average'] or 0),
+        'done_count': totals['count'],
+        'cancel_rate': round(cancelled * 100 / all_sessions) if all_sessions else 0,
+        'photographers': photographers,
+        'categories': categories,
+        'statuses': statuses,
+        'top_clients': top_clients,
+        'popular_tags': Tag.objects.annotate(count=Count('photos')).filter(count__gt=0).order_by('-count')[:10],
+    })
+
+
 # ---------------------------------------------------------------- Ro'yxatdan o'tish
 
 def register(request):
     """8-hafta: UserCreationForm yordamida ro'yxatdan o'tish."""
     if request.user.is_authenticated:
-        return redirect('photostudio:photo_list')
+        return redirect('photostudio:after_login')
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            login(request, user, backend='photostudio.backends.CaseInsensitiveModelBackend')
             messages.success(request, f"Xush kelibsiz, {user.username}! Siz ro'yxatdan o'tdingiz.")
-            return redirect('photostudio:photo_list')
+            return redirect('photostudio:cabinet')
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
