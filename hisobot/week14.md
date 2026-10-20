@@ -95,9 +95,9 @@ Commit tarixi (`git log --oneline --graph`):
 Client 1 ──── * Session 1 ──── * Photo * ──── 1 Category
 ```
 
-- `Client` (`:21`) — `full_name`, `phone` (RegexValidator bilan), `email`, `created_at`
-- `Session` (`:46`) — `client` (FK), `photographer`, `scheduled_at`, `duration_minutes`, `location`, `price`, `status` (TextChoices: Rejalashtirilgan / Bajarilgan / Bekor qilingan), `notes`
-- `Photo.session` (`:103`) — surat qaysi fotosessiyada olingani
+- `Client` (`:47`) — `full_name`, `phone` (RegexValidator bilan), `email`, `created_at`
+- `Session` (`:81`) — `client` (FK), `photographer`, `scheduled_at`, `duration_minutes`, `location`, `price`, `status` (TextChoices: Rejalashtirilgan / Bajarilgan / Bekor qilingan), `notes`
+- `Photo.session` (`:138`) — surat qaysi fotosessiyada olingani
 
 Migratsiya: [`0004_client_session_photo_session.py`](../photostudio/migrations/0004_client_session_photo_session.py)
 

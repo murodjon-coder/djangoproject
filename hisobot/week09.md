@@ -24,7 +24,7 @@ Shuning uchun loyihadagi har bir POST formada `{% csrf_token %}` bor.
 
 ### 3-topshiriq — MIDDLEWARE ro'yxatini o'rganish
 
-[`config/settings.py:47`](../config/settings.py) — har bir qatorga izoh yozildi:
+[`config/settings.py:58`](../config/settings.py) — har bir qatorga izoh yozildi:
 
 | Middleware | Vazifasi |
 |---|---|
@@ -59,7 +59,7 @@ class RequestTimingMiddleware:
 
 ### 5-topshiriq — Middleware'ni ulash
 
-[`config/settings.py:63`](../config/settings.py):
+[`config/settings.py:74`](../config/settings.py):
 
 ```python
 MIDDLEWARE = [

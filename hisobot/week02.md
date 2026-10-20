@@ -33,10 +33,10 @@ Bitta loyihada bir nechta ilova bo'lishi mumkin, bitta ilovani esa boshqa loyiha
 
 | Nima | Qayerda | Nima qiladi (og'zaki tushuntirish) |
 |---|---|---|
-| `INSTALLED_APPS` | [`config/settings.py:33`](../config/settings.py) | Loyihada qaysi ilovalar ishlashini bildiradi. Django'ning tayyor ilovalari (admin, auth...) va mening `photostudio` ilovam shu yerda |
-| `DATABASES` | [`config/settings.py:89`](../config/settings.py) | Qaysi ma'lumotlar bazasi ishlatilishi: bizda SQLite, fayl `db.sqlite3` |
-| `TIME_ZONE` | [`config/settings.py:121`](../config/settings.py) | Vaqt zonasi. `'UTC'` dan `'Asia/Tashkent'` ga o'zgartirdim, sana-vaqtlar Toshkent vaqtida ko'rinishi uchun |
-| `urlpatterns` | [`config/urls.py:14`](../config/urls.py) | URL manzillar ro'yxati: `admin/`, `api/`, `accounts/...` va ilovaning URL'lari (`include('photostudio.urls')`) |
+| `INSTALLED_APPS` | [`config/settings.py:44`](../config/settings.py) | Loyihada qaysi ilovalar ishlashini bildiradi. Django'ning tayyor ilovalari (admin, auth...) va mening `photostudio` ilovam shu yerda |
+| `DATABASES` | [`config/settings.py:105`](../config/settings.py) | Qaysi ma'lumotlar bazasi ishlatilishi: bizda SQLite, fayl `db.sqlite3` |
+| `TIME_ZONE` | [`config/settings.py:137`](../config/settings.py) | Vaqt zonasi. `'UTC'` dan `'Asia/Tashkent'` ga o'zgartirdim, sana-vaqtlar Toshkent vaqtida ko'rinishi uchun |
+| `urlpatterns` | [`config/urls.py:15`](../config/urls.py) | URL manzillar ro'yxati: `admin/`, `api/`, `accounts/...` va ilovaning URL'lari (`include('photostudio.urls')`) |
 | ilova `urlpatterns` | [`photostudio/urls.py:7`](../photostudio/urls.py) | Ilovaning o'z URL'lari (`photos/`, `clients/`, ...) |
 
 ### 4-topshiriq — Yangi ilova yaratish
@@ -59,7 +59,7 @@ python manage.py startapp photostudio
 
 ### 5-topshiriq — Ilovani loyihaga ulash
 
-[`config/settings.py:33`](../config/settings.py):
+[`config/settings.py:44`](../config/settings.py):
 
 ```python
 INSTALLED_APPS = [

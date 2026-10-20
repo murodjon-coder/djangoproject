@@ -26,7 +26,7 @@ Qisqasi: `makemigrations` — rejani yozadi, `migrate` — rejani bajaradi.
 
 ### 3-topshiriq — Model yaratish
 
-[`photostudio/models.py:85`](../photostudio/models.py) (3-haftadagi asl ko'rinishi):
+[`photostudio/models.py:120`](../photostudio/models.py) (3-haftadagi asl ko'rinishi):
 
 ```python
 class Photo(models.Model):

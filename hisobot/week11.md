@@ -30,7 +30,7 @@ Static fayllardan farqi: media fayllarni foydalanuvchilar yuklaydi va ular git'g
 pip install pillow       # ImageField uchun kerak
 ```
 
-[`photostudio/models.py:101`](../photostudio/models.py):
+[`photostudio/models.py:136`](../photostudio/models.py):
 
 ```python
 # 11-hafta: rasm fayli media/photos/YYYY/MM/ papkasiga saqlanadi
@@ -43,9 +43,9 @@ Yangi surat qo'shishda esa forma rasmni **majburiy** qiladi (`PhotoForm.__init__
 
 ### 4-topshiriq — Yuklash formasi va view
 
-ModelForm — [`photostudio/forms.py:7`](../photostudio/forms.py) (`fields` ichida `'image'`).
+ModelForm — [`photostudio/forms.py:17`](../photostudio/forms.py) (`fields` ichida `'image'`).
 
-View — [`photostudio/views.py:92`](../photostudio/views.py):
+View — [`photostudio/views.py:161`](../photostudio/views.py):
 
 ```python
 form = PhotoForm(request.POST, request.FILES)
@@ -59,7 +59,7 @@ Template — [`form.html`](../photostudio/templates/photostudio/form.html):
 
 ### 5-topshiriq — Faylni sahifada ko'rsatish
 
-[`config/settings.py:138`](../config/settings.py):
+[`config/settings.py:154`](../config/settings.py):
 
 ```python
 MEDIA_URL = 'media/'

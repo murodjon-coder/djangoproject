@@ -30,7 +30,7 @@ Odatda Django static fayllarni faqat har bir ilovaning ichidagi `static/` papkad
 
 ### 3-topshiriq — Static papkani sozlash
 
-[`config/settings.py:131`](../config/settings.py):
+[`config/settings.py:147`](../config/settings.py):
 
 ```python
 STATIC_URL = 'static/'

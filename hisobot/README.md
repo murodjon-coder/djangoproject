@@ -23,6 +23,8 @@ Har bir hisobotda: **nazariy javoblar** (2–3 gap), **amaliy qism** (qaysi fayl
 | [14](week14.md) | Kichik loyiha | Photo + Client + Session, to'liq CRUD, rollar, git branch | `9294fa8`, `ef328b2` |
 | [15](week15.md) | Yakuniy loyiha | talablar ro'yxati, taqdimot ssenariysi, savol-javoblar | — |
 
+📌 **Ustozga tushuntirish qo'llanmasi** (har hafta: savollarga javob, qayerda yozilgan, nima uchun, qanday ko'rsatish + kutilayotgan savollar): <https://claude.ai/code/artifact/f4adeabc-2c5c-4a70-a17e-4ababc81410d>
+
 📌 Kursdan keyin qo'shilgan funksiyalar (qidiruv, teglar, mijoz kabineti, statistika, onlayn bron, deploy, AI suratlar): [**qoshimcha.md**](qoshimcha.md)
 
 📌 Internetga joylash: [**DEPLOY.md**](../DEPLOY.md)

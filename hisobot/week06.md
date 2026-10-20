@@ -24,7 +24,7 @@ Bazani o'zgartiradigan amallar (qo'shish, tahrirlash, o'chirish) doim POST bilan
 
 ### 3-topshiriq — Forma klassi
 
-[`photostudio/forms.py:7`](../photostudio/forms.py):
+[`photostudio/forms.py:17`](../photostudio/forms.py):
 
 ```python
 class PhotoForm(forms.ModelForm):
@@ -48,7 +48,7 @@ class PhotoForm(forms.ModelForm):
 
 ### 4-topshiriq — View'da qayta ishlash (`is_valid()`)
 
-[`photostudio/views.py:87`](../photostudio/views.py):
+[`photostudio/views.py:155`](../photostudio/views.py):
 
 ```python
 @login_required
@@ -64,7 +64,7 @@ def photo_create(request):
     return render(request, 'photostudio/form.html', {...})
 ```
 
-URL: `photos/add/` → [`photostudio/urls.py:14`](../photostudio/urls.py)
+URL: `photos/add/` → [`photostudio/urls.py:17`](../photostudio/urls.py)
 
 ### 5-topshiriq — Xatolikni ko'rsatish
 

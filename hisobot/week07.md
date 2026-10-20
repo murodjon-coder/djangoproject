@@ -24,7 +24,7 @@ U `ForeignKey` va `OneToOne` bog'lanishlar uchun ishlaydi.
 
 ### 3-topshiriq — Bog'liq model + ForeignKey
 
-[`photostudio/models.py:7`](../photostudio/models.py) — yangi model:
+[`photostudio/models.py:9`](../photostudio/models.py) — yangi model:
 
 ```python
 class Category(models.Model):
@@ -34,7 +34,7 @@ class Category(models.Model):
         return self.name
 ```
 
-[`photostudio/models.py:92`](../photostudio/models.py) — `Photo` ga ForeignKey:
+[`photostudio/models.py:127`](../photostudio/models.py) — `Photo` ga ForeignKey:
 
 ```python
 category = models.ForeignKey(
@@ -51,7 +51,7 @@ Admin orqali 4 ta kategoriya qo'shildi: Portret, To'y, Oilaviy, Bolalar.
 
 ### 4-topshiriq — `__str__` metodi
 
-[`photostudio/models.py:117`](../photostudio/models.py):
+[`photostudio/models.py:154`](../photostudio/models.py):
 
 ```python
 def __str__(self):
@@ -64,10 +64,13 @@ def __str__(self):
 
 ### 5-topshiriq — `select_related` qo'llash
 
-[`photostudio/views.py:64`](../photostudio/views.py) va [`:74`](../photostudio/views.py):
+[`photostudio/views.py:104`](../photostudio/views.py) — `gallery_queryset()`, uni FBV ham, CBV ham ishlatadi:
 
 ```python
-photos = Photo.objects.select_related('category')
+def gallery_queryset():
+    # select_related — ForeignKey (kategoriya) JOIN bilan bitta so'rovda;
+    # prefetch_related — Many-to-Many (teglar, keyinroq qo'shilgan) bitta qo'shimcha so'rovda
+    return Photo.objects.select_related('category').prefetch_related('tags')
 ```
 
 Template'da: `{{ photo.category.name|default:"Kategoriyasiz" }}`

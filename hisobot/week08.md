@@ -24,7 +24,7 @@ Bu yopiq ma'lumotlarni (mijozlar, fotosessiyalar) begona odamlardan himoya qilad
 
 ### 3-topshiriq — Ro'yxatdan o'tish (UserCreationForm)
 
-[`photostudio/views.py:268`](../photostudio/views.py):
+[`photostudio/views.py:621`](../photostudio/views.py):
 
 ```python
 def register(request):
@@ -40,7 +40,7 @@ def register(request):
     return render(request, 'registration/register.html', {'form': form})
 ```
 
-URL: `accounts/register/` — [`photostudio/urls.py:34`](../photostudio/urls.py)
+URL: `accounts/register/` — [`photostudio/urls.py:43`](../photostudio/urls.py)
 Template: [`templates/registration/register.html`](../templates/registration/register.html)
 
 ### 4-topshiriq — Login va Logout (LoginView / LogoutView)
@@ -54,11 +54,11 @@ path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
 
 - Login template: [`templates/registration/login.html`](../templates/registration/login.html)
 - Logout — Django 5+ da faqat **POST** bilan ishlaydi, shuning uchun `base.html` da "Chiqish" oddiy havola emas, `{% csrf_token %}` li kichik forma.
-- Sozlamalar — [`config/settings.py:143`](../config/settings.py): `LOGIN_URL`, `LOGIN_REDIRECT_URL`, `LOGOUT_REDIRECT_URL`.
+- Sozlamalar — [`config/settings.py:185`](../config/settings.py): `LOGIN_URL`, `LOGIN_REDIRECT_URL`, `LOGOUT_REDIRECT_URL`.
 
 ### 5-topshiriq — Sahifani himoyalash
 
-- FBV: `@login_required` — [`views.py:60`](../photostudio/views.py) (`photo_list`), shuningdek `photo_detail`, `photo_create`, `photo_update`.
+- FBV: `@login_required` — [`views.py:110`](../photostudio/views.py) (`photo_list`), shuningdek `photo_detail`, `photo_create`, `photo_update`.
 - CBV: `LoginRequiredMixin` — `PhotoListView` va 14-haftadagi barcha mijoz/fotosessiya view'lari.
 
 ---

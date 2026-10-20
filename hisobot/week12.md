@@ -30,7 +30,7 @@ Bu jarayon Django formalariga o'xshaydi: serializer ham maydonlarni validatsiya 
 pip install djangorestframework
 ```
 
-[`config/settings.py:42`](../config/settings.py) → `INSTALLED_APPS` ga `'rest_framework'`.
+[`config/settings.py:53`](../config/settings.py) → `INSTALLED_APPS` ga `'rest_framework'`.
 
 Ruxsatlar — 12-haftada `IsAuthenticatedOrReadOnly` edi: o'qish hammaga, yozish faqat login qilganlarga.
 
@@ -85,7 +85,7 @@ class PhotoViewSet(viewsets.ModelViewSet):
 
 ### 5-topshiriq — Router va sinash
 
-[`config/urls.py:11`](../config/urls.py):
+[`config/urls.py:12`](../config/urls.py):
 
 ```python
 router = DefaultRouter()

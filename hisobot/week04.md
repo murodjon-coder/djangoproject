@@ -24,7 +24,7 @@ FBV oddiy va moslashuvchan, CBV esa takrorlanuvchi ishlar (ro'yxat, detail, CRUD
 
 ### 3-topshiriq — Function-based view
 
-[`photostudio/views.py:60`](../photostudio/views.py):
+[`photostudio/views.py:110`](../photostudio/views.py):
 
 ```python
 @login_required                       # 8-haftada qo'shilgan
@@ -57,7 +57,7 @@ Barcha sahifalar umumiy [`templates/base.html`](../templates/base.html) dan mero
 
 ### 5-topshiriq — ListView bilan qayta yozish
 
-[`photostudio/views.py:71`](../photostudio/views.py):
+[`photostudio/views.py:124`](../photostudio/views.py):
 
 ```python
 class PhotoListView(LoginRequiredMixin, ListView):
@@ -71,7 +71,7 @@ class PhotoListView(LoginRequiredMixin, ListView):
 
 Ikkala view **bitta template**'dan foydalanadi. Sahifadagi belgi (badge) qaysi view ishlayotganini ko'rsatadi.
 
-URL'lar — [`photostudio/urls.py:12-13`](../photostudio/urls.py):
+URL'lar — [`photostudio/urls.py:15-16`](../photostudio/urls.py):
 
 ```python
 path('photos/', views.photo_list, name='photo_list'),                      # FBV

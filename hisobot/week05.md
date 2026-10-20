@@ -23,7 +23,7 @@ Shunday qilib, bitta view va bitta URL pattern minglab obyekt sahifalariga xizma
 
 ### 3-topshiriq — Ro'yxat sahifasi uchun URL
 
-[`photostudio/urls.py:12`](../photostudio/urls.py):
+[`photostudio/urls.py:15`](../photostudio/urls.py):
 
 ```python
 app_name = 'photostudio'
@@ -38,13 +38,13 @@ Ilova URL'lari loyihaga [`config/urls.py`](../config/urls.py) da `path('', inclu
 
 ### 4-topshiriq — Dinamik URL
 
-[`photostudio/urls.py:15`](../photostudio/urls.py):
+[`photostudio/urls.py:18`](../photostudio/urls.py):
 
 ```python
 path('photos/<int:id>/', views.photo_detail, name='photo_detail'),
 ```
 
-[`photostudio/views.py:80`](../photostudio/views.py):
+[`photostudio/views.py:141`](../photostudio/views.py):
 
 ```python
 @login_required
