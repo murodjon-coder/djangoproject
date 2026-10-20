@@ -11,8 +11,8 @@ Loyiha internetga chiqishga tayyor. Maxfiy sozlamalar `.env` faylida, static fay
 | Uxlab qolish | yo'q (3 oyda bir marta "Extend" tugmasini bosish kerak) | 15 daqiqa ishlatilmasa uxlaydi, birinchi ochilish ~1 daqiqa |
 | Qiyinligi | 15–20 daqiqa, qo'lda sozlanadi | 5 daqiqa, deyarli avtomatik |
 
-> **Shart:** ikkala variant ham kodni **GitHub**'dan oladi. Avval loyihani GitHub'ga push qiling
-> ([`hisobot/week14.md`](hisobot/week14.md) dagi buyruqlar).
+> **Shart:** ikkala variant ham kodni **GitHub**'dan oladi — loyiha allaqachon GitHub'da: <https://github.com/murodjon-coder/djangoproject>.
+> Repo **private** bo'lgani uchun serverda `git clone` qilishda GitHub login so'raladi (PythonAnywhere'da token kerak bo'ladi) yoki repo'ni vaqtincha public qiling.
 
 ---
 
@@ -26,7 +26,7 @@ Login (masalan `murodjon`) saytingiz manzili bo'ladi: `https://murodjon.pythonan
 **Dashboard → Consoles → Bash** ni oching va ketma-ket bajaring (`<github-login>` ni o'zingiznikiga almashtiring):
 
 ```bash
-git clone https://github.com/<github-login>/photostudio.git
+git clone https://github.com/murodjon-coder/djangoproject.git photostudio
 cd photostudio
 
 python3.13 -m venv ~/venv-photostudio

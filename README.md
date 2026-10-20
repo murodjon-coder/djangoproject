@@ -1,7 +1,7 @@
 # Fotostudiya boshqaruv tizimi
 
 **Introduction to Django** kursi bo'yicha yakuniy loyiha.
-Variant: **19 — fotostudiya (`photostudio`)**. Muallif: Murodjon.
+Variant: **19 — fotostudiya (`photostudio`)**. Muallif: Murodjon. GitHub: <https://github.com/murodjon-coder/djangoproject>
 
 Fotostudiya xodimlari uchun veb-tizim: suratlar (portfolio), mijozlar va fotosessiyalarni
 bir joyda boshqarish, rasm yuklash, REST API va testlar.

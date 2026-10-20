@@ -1,6 +1,6 @@
 # 15-hafta — Yakuniy loyiha (Final Project)
 
-**Holat:** ✅ loyiha tayyor · ⚠️ GitHub'ga push qilish va shaxsiy fayllarni almashtirish sizda qoldi (pastda)
+**Holat:** ✅ loyiha tayyor va GitHub'da: <https://github.com/murodjon-coder/djangoproject> · ⚠️ shaxsiy surat va JDU logotipini almashtirish sizda qoldi (pastda)
 
 ---
 
@@ -13,7 +13,7 @@
 | Kamida bitta forma | ✅ 3 ta ModelForm + UserCreationForm | [`forms.py`](../photostudio/forms.py) |
 | Autentifikatsiya: ro'yxatdan o'tish, login/logout, himoyalangan sahifa | ✅ | [`week08.md`](week08.md) |
 | Barcha modellar admin panelda | ✅ Category, Client, Session, Photo | [`admin.py`](../photostudio/admin.py) |
-| Git + GitHub, `.gitignore` | ✅ git, 16 ta mazmunli commit, branch + merge, `.gitignore` · ⚠️ **GitHub'ga push — sizda** | [`week14.md`](week14.md#3-topshiriq--reja-va-git) |
+| Git + GitHub, `.gitignore` | ✅ GitHub: [murodjon-coder/djangoproject](https://github.com/murodjon-coder/djangoproject), 28 ta mazmunli commit, 5 ta branch + merge, `.gitignore` | [`week14.md`](week14.md#3-topshiriq--reja-va-git) |
 
 ## 2. Bonus ballar (+3) — hammasi bajarilgan
 
@@ -28,7 +28,7 @@
 - [ ] `static/images/men.jpg` — **o'z suratingiz** bilan almashtiring
 - [ ] `static/images/jdu_logo.png` — **JDU'ning haqiqiy logotipi** bilan almashtiring
 - [ ] (ixtiyoriy) `static/video/intro.mp4` — o'z videongiz
-- [ ] GitHub'ga push qiling ([`week14.md`](week14.md) dagi buyruqlar)
+- [x] GitHub'ga push qilingan — https://github.com/murodjon-coder/djangoproject
 - [ ] `admin` parolini o'zgartiring (`python manage.py changepassword admin`) yoki shu parolni eslab qoling
 - [ ] Taqdimotdan oldin: `cd ~/Django/photostudio && source ../photostudio_venv/bin/activate && python manage.py runserver`
 - [ ] `pytest` ni bir marta ishga tushirib ko'ring

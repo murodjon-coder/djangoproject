@@ -34,7 +34,7 @@ Har bir hisobotda: **nazariy javoblar** (2–3 gap), **amaliy qism** (qaysi fayl
 ## ⚠️ Sizda qolgan ishlar
 
 1. **10-hafta:** `static/images/men.jpg` (shaxsiy surat) va `static/images/jdu_logo.png` (JDU logotipi) hozir **vaqtinchalik rasmlar** — o'zingiznikiga almashtiring (nomlari bir xil bo'lsin).
-2. **14/15-hafta:** GitHub'da repozitoriy yaratib, `git push` qiling — buyruqlar [`week14.md`](week14.md) da.
+2. ~~GitHub'ga push~~ — ✅ bajarildi: <https://github.com/murodjon-coder/djangoproject>
 
 ## Loyihani ishga tushirish
 

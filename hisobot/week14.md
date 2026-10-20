@@ -1,6 +1,6 @@
 # 14-hafta — Kichik loyiha yaratish
 
-**Holat:** ✅ bajarildi (GitHub'ga push qilish bundan mustasno, pastga qarang) · **Commit:** `9294fa8` (`week14-kichik-loyiha` branch'ida) → `main` ga merge: `ef328b2`
+**Holat:** ✅ bajarildi, GitHub'ga push qilingan · **Commit:** `9294fa8` (`week14-kichik-loyiha` branch'ida) → `main` ga merge: `ef328b2`
 
 Variant 19: **Fotostudiya boshqaruvi — Photo, Client, Session**.
 
@@ -76,16 +76,18 @@ Commit tarixi (`git log --oneline --graph`):
 * 2109946 Week 1: Django loyihasi yaratildi (django-admin startproject)
 ```
 
-> ⚠️ **SIZ BAJARISHINGIZ KERAK — GitHub'ga push.** Buni sizning GitHub akkauntingizsiz qilib bo'lmaydi:
-> 1. <https://github.com/new> da yangi repozitoriy yarating (masalan `photostudio`). README, .gitignore **qo'shmang** — ular loyihada bor.
-> 2. Terminalda:
->    ```bash
->    cd ~/Django/photostudio
->    git remote add origin https://github.com/<github-login>/photostudio.git
->    git push -u origin main
->    git push origin week14-kichik-loyiha
->    ```
-> 3. Parol so'ralsa, GitHub paroli emas, **Personal Access Token** kiriting (GitHub → Settings → Developer settings → Tokens).
+**GitHub:** <https://github.com/murodjon-coder/djangoproject> (private) — `main` va 4 ta branch push qilingan.
+
+```bash
+# SSH kalit yaratildi va GitHub akkauntiga qo'shildi (Settings → SSH keys) — token kerak emas
+ssh-keygen -t ed25519 -C "murodjona187@gmail.com"
+git remote add origin git@github.com:murodjon-coder/djangoproject.git
+# GitHub repo ochilganda avtomatik README qo'shilgan edi — tarixlar birlashtirildi (ustidan yozilmadi)
+git merge origin/main --allow-unrelated-histories
+git push -u origin --all
+```
+
+Bundan keyin o'zgarishni yuborish: `git add -A && git commit -m "..." && git push`.
 
 ### 4-topshiriq — Asosiy funksionallikni birlashtirish
 

@@ -139,7 +139,7 @@ To'liq qadamma-qadam qo'llanma: [**DEPLOY.md**](../DEPLOY.md) (PythonAnywhere �
 - Kompyuterda server rejimi gunicorn bilan sinab ko'rildi: barcha sahifalar 200, CSS gzip bilan siqilib beriladi, media fayllar ochiladi —
   [`terminal/deploy_sinov.txt`](terminal/deploy_sinov.txt).
 
-> ⚠️ Oxirgi qadam sizda qoladi: loyihani GitHub'ga push qilish va PythonAnywhere'da akkaunt ochish. Ularni faqat sizning akkauntlaringiz bilan qilish mumkin.
+> ⚠️ Oxirgi qadam sizda qoladi: PythonAnywhere'da akkaunt ochish (loyiha GitHub'da: <https://github.com/murodjon-coder/djangoproject>).
 
 ## 7. AI bilan yaratilgan suratlar
 
